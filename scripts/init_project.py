@@ -15,6 +15,7 @@ from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_ROOT = SKILL_ROOT / "assets" / "project-template"
+PROJECT_TOOL_NAMES = ("check_project.py", "record_event.py", "snapshot_project.py")
 
 
 def slugify(value: str) -> str:
@@ -114,6 +115,12 @@ def main() -> int:
         for old, new in replacements.items():
             text = text.replace(old, new)
         path.write_text(text, encoding="utf-8", newline="\n")
+
+    project_tools = target / "tools" / "pcb_design"
+    project_tools.mkdir(parents=True, exist_ok=True)
+    for name in PROJECT_TOOL_NAMES:
+        shutil.copy2(SKILL_ROOT / "scripts" / name, project_tools / name)
+    shutil.copy2(SKILL_ROOT / "VERSION", project_tools / "SYSTEM_VERSION")
 
     messages = [] if args.no_git else run_git(target, args.git_name, args.git_email)
     print(f"Created PCB project: {target}")

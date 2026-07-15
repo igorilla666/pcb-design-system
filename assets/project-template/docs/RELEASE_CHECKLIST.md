@@ -2,6 +2,7 @@
 
 ## Sources and state
 
+- [ ] `python tools/pcb_design/check_project.py . --strict` passes.
 - [ ] Authoritative revision and files recorded in PROJECT_STATE.
 - [ ] Git working tree reviewed.
 - [ ] Requirements, power budget, pin map, and ADRs current.

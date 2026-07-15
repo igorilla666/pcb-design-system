@@ -1,6 +1,6 @@
 ---
 name: pcb-design-system
-description: Initialize, track, audit, and release PCB projects with a persistent Git-backed record, especially KiCad projects. Use when Codex starts or resumes a PCB design, changes schematics or layouts, selects components, records design decisions, runs ERC/DRC, prepares BOM/CPL/Gerbers, validates prototypes, creates hardware revisions, or promotes lessons into a reusable design process.
+description: Initialize, track, audit, and release PCB projects with a persistent Git-backed record, especially KiCad projects. Use when an AI coding agent starts or resumes a PCB design, changes schematics or layouts, selects components, records design decisions, runs ERC/DRC, prepares BOM/CPL/Gerbers, validates prototypes, creates hardware revisions, or promotes lessons into a reusable design process.
 ---
 
 # PCB Design System
@@ -8,23 +8,32 @@ description: Initialize, track, audit, and release PCB projects with a persisten
 Make project files and Git the source of truth. Never rely on chat history as the
 only record of a decision, test, risk, or release state.
 
+Resolve `SKILL_ROOT` as the absolute directory containing this `SKILL.md`. Resolve
+all bundled `scripts/`, `references/`, and `assets/` paths from `SKILL_ROOT`, not
+from the current working directory. This keeps the workflow portable across AI
+agents and installation locations.
+
 ## Start or resume
 
 For a new project, run:
 
-`python scripts/init_project.py "Project name" "absolute/target/path"`
+`python "<SKILL_ROOT>/scripts/init_project.py" "Project name" "absolute/target/path"`
 
 For an existing project:
 
 1. Locate the repository root.
-2. Read `docs/PROJECT_STATE.md`.
-3. Read the latest entries in `docs/PROJECT_LOG.md`.
-4. Read applicable files in `docs/decisions/`.
-5. Check `git status` and preserve unrelated user changes.
-6. State the current phase, open risks, and intended change before editing.
+2. Read `AGENTS.md` when present.
+3. Read `docs/PROJECT_STATE.md`.
+4. Read the latest entries in `docs/PROJECT_LOG.md`.
+5. Read applicable files in `docs/decisions/`.
+6. Check `git status` and preserve unrelated user changes.
+7. State the current phase, open risks, and intended change before editing.
 
 If the expected records are missing, create them from
-`assets/project-template/` without overwriting hardware files.
+`<SKILL_ROOT>/assets/project-template/` without overwriting hardware files.
+
+Prefer the project-local tools in `tools/pcb_design/`. For an older project that
+does not contain them, run the matching script from `<SKILL_ROOT>/scripts/`.
 
 ## Work protocol
 
@@ -51,8 +60,8 @@ After the change:
 2. Run ERC, update PCB, refill zones, and run DRC as applicable.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
-4. Run `scripts/snapshot_project.py` for a durable validation snapshot.
-5. Append the event with `scripts/record_event.py`.
+4. Run `python tools/pcb_design/snapshot_project.py . --label LABEL`.
+5. Run `python tools/pcb_design/record_event.py .` with the applicable fields.
 6. Update `docs/PROJECT_STATE.md`, open risks, and next actions.
 7. Commit one coherent change.
 
@@ -61,7 +70,8 @@ gates. Use [`references/records.md`](references/records.md) for log, state, ADR,
 and evidence formats. Use
 [`references/lessons-water-controller.md`](references/lessons-water-controller.md)
 when reviewing power, grounding, relays, WS2812, RS-485, symbols, or manufacturing
-variants.
+variants. Use [`references/compatibility.md`](references/compatibility.md) when
+installing or maintaining the skill across different AI agents.
 
 ## Decisions and evidence
 
@@ -88,7 +98,8 @@ Do not call a design production-ready until:
 - assembly preview and polarized-component orientations are checked;
 - first-article tests and remaining risks are recorded.
 
-Run `scripts/check_project.py PROJECT_ROOT` before handoff or release.
+Run `python tools/pcb_design/check_project.py . --strict` before handoff or
+release. Use the matching bundled script when project-local tools are absent.
 
 ## Improve the system
 

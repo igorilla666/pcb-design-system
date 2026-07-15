@@ -33,7 +33,9 @@ Keep `docs/PROJECT_LOG.md` append-only. For each meaningful event record:
 - open risks and next action;
 - related commit or issue when available.
 
-Use `scripts/record_event.py` to keep formatting consistent.
+Use `tools/pcb_design/record_event.py` to keep formatting consistent. For an
+older project without local tools, use the matching script from the installed
+skill.
 
 ## 3. ADRs
 
@@ -59,7 +61,9 @@ Store immutable snapshots below `docs/validation/YYYYMMDD-HHMM-label/`:
 - BOM/CPL validation;
 - measurements, photos, and test conditions.
 
-Use `scripts/snapshot_project.py` before milestones and production handoffs.
+Use `tools/pcb_design/snapshot_project.py` before milestones and production
+handoffs. For an older project without local tools, use the matching script from
+the installed skill.
 
 ## 5. Lessons promotion
 

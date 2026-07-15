@@ -24,16 +24,31 @@ REQUIRED = [
     "hardware/README.md",
     "manufacturing/README.md",
 ]
+PORTABILITY_FILES = [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "tools/pcb_design/SYSTEM_VERSION",
+    "tools/pcb_design/check_project.py",
+    "tools/pcb_design/record_event.py",
+    "tools/pcb_design/snapshot_project.py",
+]
 PLACEHOLDERS = ("{{PROJECT_NAME}}", "{{DATE}}", "{{SYSTEM_VERSION}}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("project", type=Path)
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat missing multi-agent portability files as errors",
+    )
     args = parser.parse_args()
     root = args.project.expanduser().resolve()
 
     errors: list[str] = []
+    warnings: list[str] = []
     for relative in REQUIRED:
         path = root / relative
         if not path.is_file():
@@ -50,11 +65,25 @@ def main() -> int:
     if not (root / ".git").exists():
         errors.append("missing Git repository (.git)")
 
+    for relative in PORTABILITY_FILES:
+        if not (root / relative).is_file():
+            message = f"missing portability file: {relative}"
+            if args.strict:
+                errors.append(message)
+            else:
+                warnings.append(message)
+
     if errors:
         print("PCB project structure: FAIL")
         for error in errors:
             print(f"- {error}")
         return 1
+
+    if warnings:
+        print("PCB project structure: PASS WITH WARNINGS")
+        for warning in warnings:
+            print(f"- {warning}")
+        return 0
 
     print("PCB project structure: PASS")
     return 0

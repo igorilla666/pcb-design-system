@@ -1,6 +1,8 @@
 # {{PROJECT_NAME}}
 
 PCB project initialized on {{DATE}} with pcb-design-system {{SYSTEM_VERSION}}.
+The repository includes model-neutral agent instructions and local workflow
+tools, so its records remain usable across supported AI coding agents.
 
 ## Start here
 
@@ -9,6 +11,7 @@ PCB project initialized on {{DATE}} with pcb-design-system {{SYSTEM_VERSION}}.
 3. Record architecture decisions in `docs/decisions/`.
 4. Keep `docs/PROJECT_LOG.md` append-only.
 5. Use `docs/RELEASE_CHECKLIST.md` before manufacturing.
+6. Run `python tools/pcb_design/check_project.py . --strict` before handoff.
 
 ## Layout
 
@@ -16,6 +19,8 @@ PCB project initialized on {{DATE}} with pcb-design-system {{SYSTEM_VERSION}}.
 - `manufacturing/`: immutable release packages, one directory per revision.
 - `docs/`: state, log, decisions, calculations, tests, and validation evidence.
 - `tools/`: project-specific validation scripts.
+- `AGENTS.md`: authoritative model-neutral working instructions.
+- `CLAUDE.md` and `GEMINI.md`: thin pointers to the common instructions.
 
 Do not overwrite a released variant or manufacturing package. Create a new
 revision.
