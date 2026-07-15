@@ -38,6 +38,8 @@
 - Use No Connect only for deliberately unused physical pins.
 - Make all wires visible and use unambiguous net names.
 - Require zero ERC errors and explain all warnings.
+- Run the deterministic schematic gate and inspect its exported netlist; a
+  structure-only project check is not an electrical validation.
 - Review current paths and fault states manually.
 
 ## 4. PCB gate
@@ -49,6 +51,7 @@
 - Refill zones after every relevant edit.
 - Highlight changed nets and remove obsolete tracks/vias.
 - Require zero DRC errors and zero unconnected pads.
+- Run the deterministic PCB gate with schematic parity.
 - Review both copper layers, silkscreen, polarity, pin 1, and connector mating.
 
 ## 5. Manufacturing gate

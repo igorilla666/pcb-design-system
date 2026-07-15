@@ -65,6 +65,9 @@ Use `tools/pcb_design/snapshot_project.py` before milestones and production
 handoffs. For an older project without local tools, use the matching script from
 the installed skill.
 
+The snapshot tool copies `build/pcb-design-check/` automatically when present.
+Do not call a snapshot release evidence when no applicable reports were copied.
+
 ## 5. Lessons promotion
 
 Record project-specific lessons in `docs/LESSONS.md`. Promote a lesson to the

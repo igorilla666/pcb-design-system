@@ -26,6 +26,7 @@ def platform_roots(home: Path, use_environment: bool = True) -> dict[str, Path]:
         "codex": codex_home / "skills",
         "claude": home / ".claude" / "skills",
         "gemini": home / ".gemini" / "skills",
+        "antigravity": home / ".gemini" / "config" / "skills",
     }
 
 
@@ -119,7 +120,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--platform",
-        choices=["codex", "claude", "gemini", "all"],
+        choices=["codex", "claude", "gemini", "antigravity", "all"],
         default="all",
     )
     parser.add_argument(

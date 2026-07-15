@@ -19,6 +19,11 @@
 7. Run DRC with schematic parity.
 8. Reopen in KiCad and visually inspect.
 
+Run `check_kicad.py` after connectivity changes. Active warnings, failed netlist
+export, multi-pin components with no net connections, or a missing `.kicad_pro`
+block the gate. Exclude a justified warning in KiCad and document why; never
+classify warning families as harmless without inspecting each instance.
+
 Do not fix a pin-pad mismatch by rotating artwork or moving labels. Correct the
 symbol/footprint mapping.
 
@@ -32,6 +37,10 @@ Prefer KiCad GUI or KiCad CLI. When raw editing is necessary:
 - validate parentheses/format and reopen the file;
 - compare schema/PCB parity;
 - restore immediately if the result is structurally uncertain.
+- keep the generator or transformer in the project repository before accepting
+  its output;
+- do not validate connectivity with coordinate or overlap heuristics: the
+  exported netlist is authoritative.
 
 ## Zones and net ties
 

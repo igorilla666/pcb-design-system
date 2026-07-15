@@ -6,6 +6,8 @@ Process version: pcb-design-system {{SYSTEM_VERSION}}
 
 Initialized: {{DATE}}
 
+Repository: {{REPOSITORY_URL}}
+
 ## Summary
 
 Define the controller, users, environment, and expected lifetime.

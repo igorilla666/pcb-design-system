@@ -1,4 +1,4 @@
 interface:
   display_name: "PCB Design System"
-  short_description: "Governa progetti PCB con record verificabili"
-  default_prompt: "Use $pcb-design-system per inizializzare e gestire un progetto PCB con diario, decisioni e gate di verifica."
+  short_description: "Crea e verifica progetti PCB tracciabili"
+  default_prompt: "Use $pcb-design-system per creare un nuovo progetto PCB con repository GitHub oppure riprendere una revisione applicando i gate KiCad."

@@ -23,3 +23,7 @@
   record the result.
 - Choose technically correct components before optimizing Basic/Preferred status.
 - Keep baseline, variants, and manufacturing packages physically independent.
+- A structure checker can pass a broken schematic. Name gates by their actual
+  scope, fail active ERC warnings, and audit the exported netlist.
+- Keep programmatic KiCad generators in Git; private agent scratch files cannot
+  reproduce or review an authoritative design.

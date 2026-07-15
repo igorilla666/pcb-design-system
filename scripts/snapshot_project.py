@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import hashlib
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("project", type=Path)
     parser.add_argument("--label", default="snapshot")
+    parser.add_argument(
+        "--evidence",
+        action="append",
+        default=[],
+        type=Path,
+        help="File or directory to copy into the immutable snapshot",
+    )
     args = parser.parse_args()
 
     root = args.project.expanduser().resolve()
@@ -60,6 +68,23 @@ def main() -> int:
 
     head = git_output(root, "rev-parse", "HEAD")
     status = git_output(root, "status", "--short")
+    evidence_sources = list(args.evidence)
+    default_evidence = root / "build" / "pcb-design-check"
+    if not evidence_sources and default_evidence.exists():
+        evidence_sources.append(default_evidence)
+    copied_evidence = 0
+    for source in evidence_sources:
+        source = source if source.is_absolute() else root / source
+        if not source.exists():
+            parser.error(f"evidence does not exist: {source}")
+        destination = output / "evidence" / source.name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_dir():
+            shutil.copytree(source, destination, dirs_exist_ok=True)
+            copied_evidence += sum(1 for path in source.rglob("*") if path.is_file())
+        else:
+            shutil.copy2(source, destination)
+            copied_evidence += 1
     report = [
         "# Project snapshot",
         "",
@@ -67,6 +92,7 @@ def main() -> int:
         f"- Label: {args.label}",
         f"- Git HEAD: {head or 'not available'}",
         f"- KiCad source files hashed: {len(files)}",
+        f"- Evidence files copied: {copied_evidence}",
         "",
         "## Git status",
         "",
@@ -74,8 +100,8 @@ def main() -> int:
         status or "clean",
         "```",
         "",
-        "ERC, DRC, measurements, and manufacturing validation reports should be",
-        "copied into this directory before a release decision.",
+        "A release snapshot must contain the applicable ERC, DRC, manufacturing,",
+        "and measurement evidence; zero copied files is not release evidence.",
     ]
     (output / "snapshot.md").write_text("\n".join(report) + "\n", encoding="utf-8")
     print(f"Created snapshot: {output}")

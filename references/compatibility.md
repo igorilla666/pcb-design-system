@@ -11,11 +11,12 @@ thin adapters only.
 | OpenAI Codex | `~/.codex/skills/pcb-design-system` | `agents/openai.yaml` |
 | Claude Code | `~/.claude/skills/pcb-design-system` | none required |
 | Gemini CLI | `~/.gemini/skills/pcb-design-system` | none required |
+| Antigravity | `~/.gemini/config/skills/pcb-design-system` | none required |
 
-All three consume the same Agent Skills structure based on `SKILL.md`. Gemini can
+All agents consume the same Agent Skills structure based on `SKILL.md`. Gemini can
 also discover `.agents/skills/pcb-design-system` in a workspace.
 
-Run `python scripts/install_skill.py --platform all` from the canonical checkout
+Run `python scripts/install_skill.py --platform all` once from the canonical checkout
 to install or link personal copies. Prefer link mode when the operating system
 allows it; auto mode falls back to a copy. Re-run the installer after an update
 when copies are used.
@@ -40,3 +41,5 @@ over an agent's memory or a stale installed skill.
 - Do not add model-specific frontmatter to `SKILL.md`.
 - Keep secrets and personal paths out of the skill and project templates.
 - Test both the canonical checkout and an installed copy before release.
+- Increment `VERSION` whenever an installed adapter changes; never patch an
+  installed copy without promoting the change to the canonical repository.

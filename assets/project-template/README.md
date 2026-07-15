@@ -11,7 +11,8 @@ tools, so its records remain usable across supported AI coding agents.
 3. Record architecture decisions in `docs/decisions/`.
 4. Keep `docs/PROJECT_LOG.md` append-only.
 5. Use `docs/RELEASE_CHECKLIST.md` before manufacturing.
-6. Run `python tools/pcb_design/check_project.py . --strict` before handoff.
+6. Run `check_project.py --strict` for records and `check_kicad.py` for electrical
+   gates before handoff.
 
 ## Layout
 

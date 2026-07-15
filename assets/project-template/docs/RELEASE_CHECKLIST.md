@@ -3,6 +3,7 @@
 ## Sources and state
 
 - [ ] `python tools/pcb_design/check_project.py . --strict` passes.
+- [ ] Applicable `check_kicad.py` schematic and PCB gates pass.
 - [ ] Authoritative revision and files recorded in PROJECT_STATE.
 - [ ] Git working tree reviewed.
 - [ ] Requirements, power budget, pin map, and ADRs current.
@@ -13,12 +14,12 @@
 - [ ] Polarities and boot-safe states reviewed.
 - [ ] Local decoupling present.
 - [ ] Logic levels checked at worst case.
-- [ ] ERC has zero unexplained errors.
+- [ ] ERC has zero active errors or warnings; exclusions are documented.
 - [ ] Netlist and current paths manually reviewed.
 
 ## PCB
 
-- [ ] DRC has zero errors and zero unconnected pads.
+- [ ] DRC has zero active errors or warnings and zero unconnected pads.
 - [ ] Zones refilled and split grounds/net ties reviewed on both layers.
 - [ ] Stale tracks/vias removed.
 - [ ] Pin 1, polarity, connectors, silkscreen, and mechanical access checked.

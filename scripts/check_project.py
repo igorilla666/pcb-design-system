@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the minimum persistent-record structure of a PCB project."""
+"""Validate PCB project records and portability files, not electrical design."""
 
 from __future__ import annotations
 
@@ -30,10 +30,16 @@ PORTABILITY_FILES = [
     "GEMINI.md",
     "tools/pcb_design/SYSTEM_VERSION",
     "tools/pcb_design/check_project.py",
+    "tools/pcb_design/check_kicad.py",
     "tools/pcb_design/record_event.py",
     "tools/pcb_design/snapshot_project.py",
 ]
-PLACEHOLDERS = ("{{PROJECT_NAME}}", "{{DATE}}", "{{SYSTEM_VERSION}}")
+PLACEHOLDERS = (
+    "{{PROJECT_NAME}}",
+    "{{DATE}}",
+    "{{SYSTEM_VERSION}}",
+    "{{REPOSITORY_URL}}",
+)
 
 
 def main() -> int:
@@ -74,18 +80,18 @@ def main() -> int:
                 warnings.append(message)
 
     if errors:
-        print("PCB project structure: FAIL")
+        print("PCB project record structure: FAIL")
         for error in errors:
             print(f"- {error}")
         return 1
 
     if warnings:
-        print("PCB project structure: PASS WITH WARNINGS")
+        print("PCB project record structure: PASS WITH WARNINGS")
         for warning in warnings:
             print(f"- {warning}")
         return 0
 
-    print("PCB project structure: PASS")
+    print("PCB project record structure: PASS")
     return 0
 
 

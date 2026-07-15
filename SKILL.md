@@ -13,11 +13,19 @@ all bundled `scripts/`, `references/`, and `assets/` paths from `SKILL_ROOT`, no
 from the current working directory. This keeps the workflow portable across AI
 agents and installation locations.
 
-## Start or resume
+## Create or resume
 
-For a new project, run:
+For a new project, run the interactive launcher:
 
-`python "<SKILL_ROOT>/scripts/init_project.py" "Project name" "absolute/target/path"`
+`python "<SKILL_ROOT>/scripts/new_project.py"`
+
+It asks for the project name, exact destination folder, Git identity, and GitHub
+visibility. It creates an independent local repository, initial commit, GitHub
+repository, `origin`, and first push. For automation, pass `name`, `--target`,
+`--git-name`, and `--git-email`; GitHub remains enabled unless `--no-github` is
+explicitly requested. Never invent Git identity or repository ownership.
+
+Use `init_project.py` only for local/offline initialization.
 
 For an existing project:
 
@@ -32,8 +40,8 @@ For an existing project:
 If the expected records are missing, create them from
 `<SKILL_ROOT>/assets/project-template/` without overwriting hardware files.
 
-Prefer the project-local tools in `tools/pcb_design/`. For an older project that
-does not contain them, run the matching script from `<SKILL_ROOT>/scripts/`.
+Prefer project-local tools in `tools/pcb_design/`; they preserve the process
+version used to create that repository.
 
 ## Work protocol
 
@@ -53,14 +61,18 @@ During the change:
 - Keep baseline and production variants physically independent.
 - Record sources, MPNs, limits, assumptions, and vendor confirmations.
 - Do not treat zero ERC/DRC errors as functional proof.
+- Keep any KiCad generator or transformer used to create authoritative files in
+  the repository; hidden scratch scripts are not reproducible evidence.
 
 After the change:
 
-1. Export/check the netlist when connectivity changed.
-2. Run ERC, update PCB, refill zones, and run DRC as applicable.
+1. Run `python tools/pcb_design/check_kicad.py . --stage schematic` after
+   connectivity changes; it runs ERC and audits the exported netlist.
+2. Update PCB, refill zones, then run the same tool with `--stage pcb`.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
-4. Run `python tools/pcb_design/snapshot_project.py . --label LABEL`.
+4. Run `snapshot_project.py`; it includes the latest deterministic KiCad check
+   evidence from `build/pcb-design-check/`.
 5. Run `python tools/pcb_design/record_event.py .` with the applicable fields.
 6. Update `docs/PROJECT_STATE.md`, open risks, and next actions.
 7. Commit one coherent change.
@@ -98,8 +110,8 @@ Do not call a design production-ready until:
 - assembly preview and polarized-component orientations are checked;
 - first-article tests and remaining risks are recorded.
 
-Run `python tools/pcb_design/check_project.py . --strict` before handoff or
-release. Use the matching bundled script when project-local tools are absent.
+Run both record and KiCad gates before handoff. `check_project.py --strict`
+validates only repository records and portability; it is never electrical proof.
 
 ## Improve the system
 
