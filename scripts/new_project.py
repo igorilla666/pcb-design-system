@@ -218,6 +218,7 @@ def main() -> int:
         default_target = str((Path.cwd() / repository).resolve())
         target_text = str(args.target) if args.target else require_value(None, "Repository folder", default_target)
         target = Path(target_text).expanduser().resolve()
+        target_existed = target.exists()
         if target.exists() and any(target.iterdir()):
             raise RuntimeError(f"target is not empty: {target}")
 
@@ -257,7 +258,17 @@ def main() -> int:
         ]
         result = run(command)
         if result.returncode != 0:
-            raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+            failure = result.stderr.strip() or result.stdout.strip()
+            try:
+                if target.exists():
+                    shutil.rmtree(target)
+                if target_existed:
+                    target.mkdir(parents=True, exist_ok=True)
+            except OSError as cleanup_error:
+                raise RuntimeError(
+                    f"{failure}; partial project cleanup failed: {cleanup_error}"
+                ) from cleanup_error
+            raise RuntimeError(f"{failure}; partial project files were removed")
         print(result.stdout.strip())
 
         if auth:

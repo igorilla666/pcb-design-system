@@ -20,6 +20,8 @@ On Windows, `launcher/PCBProjectLauncher.exe` provides one agent-neutral project
 creation flow. Choosing ChatGPT opens a new Codex task at the created repository;
 choosing Gemini opens that repository in Antigravity. The choice is not persisted
 as a hardware design constraint and the project can move between agents later.
+For a NAS or mapped drive rejected by Git ownership checks, add only the exact
+new repository to global `safe.directory`; never trust an entire drive or `*`.
 
 Run `python scripts/install_skill.py --platform all` once from the canonical checkout
 to install or link personal copies. Prefer link mode when the operating system

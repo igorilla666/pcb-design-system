@@ -43,32 +43,98 @@ def git_config(key: str, *, global_only: bool = False) -> str:
     return result.stdout.strip()
 
 
-def run_git(target: Path, git_name: str, git_email: str) -> None:
+def checked_git(command: list[str], *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        command,
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(
+            result.returncode,
+            command,
+            output=result.stdout,
+            stderr=result.stderr,
+        )
+    return result
+
+
+def ensure_git_directory_is_safe(target: Path) -> bool:
+    probe = subprocess.run(
+        ["git", "rev-parse", "--git-dir"],
+        cwd=target,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode == 0:
+        return False
+
+    details = f"{probe.stdout}\n{probe.stderr}".casefold()
+    if "detected dubious ownership" not in details or "safe.directory" not in details:
+        raise subprocess.CalledProcessError(
+            probe.returncode,
+            probe.args,
+            output=probe.stdout,
+            stderr=probe.stderr,
+        )
+
+    checked_git(
+        ["git", "config", "--global", "--add", "safe.directory", str(target)]
+    )
+    checked_git(["git", "rev-parse", "--git-dir"], cwd=target)
+    return True
+
+
+def remove_safe_directory(target: Path) -> None:
     subprocess.run(
+        [
+            "git",
+            "config",
+            "--global",
+            "--unset-all",
+            "--fixed-value",
+            "safe.directory",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+
+def run_git(target: Path, git_name: str, git_email: str) -> bool:
+    checked_git(
         ["git", "init", "-b", "main"],
         cwd=target,
-        check=True,
-        capture_output=True,
     )
-    subprocess.run(
-        ["git", "config", "user.name", git_name],
-        cwd=target,
-        check=True,
-        capture_output=True,
+    safe_directory_added = ensure_git_directory_is_safe(target)
+    try:
+        checked_git(["git", "config", "user.name", git_name], cwd=target)
+        checked_git(["git", "config", "user.email", git_email], cwd=target)
+        checked_git(["git", "add", "."], cwd=target)
+        checked_git(
+            ["git", "commit", "-m", "Initialize PCB project records"],
+            cwd=target,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        if safe_directory_added:
+            remove_safe_directory(target)
+        raise
+    return safe_directory_added
+
+
+def describe_git_error(error: OSError | subprocess.CalledProcessError) -> str:
+    if not isinstance(error, subprocess.CalledProcessError):
+        return str(error)
+    details = "\n".join(
+        value.strip()
+        for value in (error.stderr or "", error.output or "")
+        if value and value.strip()
     )
-    subprocess.run(
-        ["git", "config", "user.email", git_email],
-        cwd=target,
-        check=True,
-        capture_output=True,
-    )
-    subprocess.run(["git", "add", "."], cwd=target, check=True, capture_output=True)
-    subprocess.run(
-        ["git", "commit", "-m", "Initialize PCB project records"],
-        cwd=target,
-        check=True,
-        capture_output=True,
-    )
+    return f"{error}{': ' + details if details else ''}"
 
 
 def main() -> int:
@@ -126,14 +192,16 @@ def main() -> int:
 
     if not args.no_git:
         try:
-            run_git(target, git_name, git_email)
+            safe_directory_added = run_git(target, git_name, git_email)
         except (OSError, subprocess.CalledProcessError) as exc:
-            print(f"Git initialization failed: {exc}", file=sys.stderr)
+            print(f"Git initialization failed: {describe_git_error(exc)}", file=sys.stderr)
             return 1
     print(f"Created PCB project: {target}")
     print(f"Process version: {replacements['{{SYSTEM_VERSION}}']}")
     if not args.no_git:
         print("Git repository initialized on main with an initial commit.")
+        if safe_directory_added:
+            print(f"Git safe.directory added for this network repository only: {target}")
     return 0
 
 
