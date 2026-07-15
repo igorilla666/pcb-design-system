@@ -1,12 +1,26 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 igorilla666
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+[assembly: AssemblyTitle("PCB Project Launcher")]
+[assembly: AssemblyProduct("PCB Design System")]
+[assembly: AssemblyDescription("Multi-agent PCB project launcher. Licensed under Apache-2.0.")]
+[assembly: AssemblyCompany("pcb-design-system contributors")]
+[assembly: AssemblyCopyright("Copyright © 2026 igorilla666")]
+[assembly: AssemblyVersion("0.4.2.0")]
+[assembly: AssemblyFileVersion("0.4.2.0")]
+[assembly: AssemblyInformationalVersion("0.4.2")]
+[assembly: AssemblyMetadata("License", "Apache-2.0")]
 
 namespace PcbDesignSystem
 {
@@ -286,6 +300,13 @@ namespace PcbDesignSystem
         public LauncherForm()
         {
             Text = "PCB Design System - Nuovo progetto";
+            try
+            {
+                Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            }
+            catch
+            {
+            }
             StartPosition = FormStartPosition.CenterScreen;
             MinimumSize = new Size(760, 650);
             Size = new Size(820, 700);

@@ -7,3 +7,4 @@
 *.step binary
 *.stp binary
 *.exe binary
+*.ico binary

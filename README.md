@@ -54,4 +54,6 @@ See [`SKILL.md`](SKILL.md) for the workflow and
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE).
+Licensed under the [Apache License 2.0](LICENSE). The launcher source and bundled
+icon carry the same license; the Windows executable includes license metadata and
+the complete license text as an embedded resource.

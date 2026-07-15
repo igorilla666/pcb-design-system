@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 igorilla666
+
 param(
     [string]$Output,
     [switch]$InstallToDesktop
@@ -6,6 +9,8 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $source = Join-Path $root 'launcher\PCBProjectLauncher.cs'
+$icon = Join-Path $root 'launcher\llm_pcb_framework.ico'
+$license = Join-Path $root 'LICENSE'
 if (-not $Output) {
     $Output = Join-Path $root 'launcher\PCBProjectLauncher.exe'
 }
@@ -18,11 +23,19 @@ if (-not (Test-Path -LiteralPath $compiler)) {
 if (-not (Test-Path -LiteralPath $source)) {
     throw "Launcher source not found: $source"
 }
+if (-not (Test-Path -LiteralPath $icon)) {
+    throw "Launcher icon not found: $icon"
+}
+if (-not (Test-Path -LiteralPath $license)) {
+    throw "License not found: $license"
+}
 
 $outputDirectory = Split-Path -Parent $Output
 New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 
 & $compiler /nologo /target:winexe /optimize+ "/out:$Output" `
+    "/win32icon:$icon" `
+    "/resource:$license,PCBDesignSystem.LICENSE.txt" `
     /reference:System.Windows.Forms.dll `
     /reference:System.Drawing.dll `
     $source
