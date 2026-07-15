@@ -34,6 +34,8 @@
 - After the first symbol, run `check_kicad.py . --stage format` before adding
   wires or further symbols. It must confirm that the declared KiCad toolchain
   accepts the native format without migration.
+- After the first minimal board, run `check_kicad.py . --stage pcb-format`
+  before adding any footprints or layout work. It must parse without migration.
 - Verify critical parts with a symbol-pin / datasheet-function / footprint-pad
   table.
 - Check diode, TVS, zener, electrolytic, LED, MOSFET, relay, and connector

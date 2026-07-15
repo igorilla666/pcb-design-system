@@ -27,6 +27,9 @@ Required gates:
 - Immediately after the first schematic symbol is placed or generated, run
   `python tools/pcb_design/check_kicad.py . --stage format`. Do this before
   adding further symbols, wires, or generated circuitry.
+- Immediately after the first minimal PCB is created, run
+  `python tools/pcb_design/check_kicad.py . --stage pcb-format`. Do this before
+  adding footprints, placement, routing, or zones.
 - After schematic connectivity changes run
   `python tools/pcb_design/check_kicad.py . --stage schematic`.
 - For a compact review artifact, export

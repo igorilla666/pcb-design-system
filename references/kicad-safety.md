@@ -21,6 +21,16 @@ This performs only toolchain, header, and non-forced migration checks; it does
 not require a complete circuit or ERC-clean schematic. A failure means correct
 the project/generator format first, then restart from that small source state.
 
+## First-board format gate
+
+Immediately after the first minimal PCB is created or generated, and before
+adding footprints, placement, routing, or zones, run:
+
+`python tools/pcb_design/check_kicad.py . --stage pcb-format`
+
+This validates the native board syntax with KiCad's non-forced migration probe
+without requiring an outline or a DRC-clean layout.
+
 ## Connectivity changes
 
 1. Change the schematic first.
