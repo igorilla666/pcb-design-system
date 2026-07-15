@@ -13,6 +13,12 @@ tools, so its records remain usable across supported AI coding agents.
 5. Use `docs/RELEASE_CHECKLIST.md` before manufacturing.
 6. Run `check_project.py --strict` for records and `check_kicad.py` for electrical
    gates before handoff.
+7. Prefer `review_schematic_batch.py` after schematic changes; use ignored
+   `scratch/` only for temporary probes.
+8. Set `docs/kicad-toolchain.json` to the exact KiCad major before creating
+   hardware; validation rejects an undeclared or mismatched toolchain.
+9. After the first symbol, run `check_kicad.py . --stage format` before growing
+   the schematic.
 
 ## Layout
 
@@ -20,6 +26,7 @@ tools, so its records remain usable across supported AI coding agents.
 - `manufacturing/`: immutable release packages, one directory per revision.
 - `docs/`: state, log, decisions, calculations, tests, and validation evidence.
 - `tools/`: project-specific validation scripts.
+- `scratch/`: ignored, disposable diagnostics only; never authoritative output.
 - `AGENTS.md`: authoritative model-neutral working instructions.
 - `CLAUDE.md` and `GEMINI.md`: thin pointers to the common instructions.
 

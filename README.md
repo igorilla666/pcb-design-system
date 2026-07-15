@@ -11,6 +11,8 @@ of relying on chat history.
 - Provides a ready-to-use PCB project structure and release checklist.
 - Records decisions, risks, component choices, ERC/DRC results, and snapshots.
 - Includes lessons learned from a real water-controller PCB project.
+- Exports compact electrical manifests from KiCad netlists for focused review
+  and semantic diffs, without making generated artifacts authoritative.
 
 ## Install
 
@@ -51,6 +53,43 @@ powershell -ExecutionPolicy Bypass -File scripts/build_windows_launcher.ps1
 
 See [`SKILL.md`](SKILL.md) for the workflow and
 [`references/compatibility.md`](references/compatibility.md) for platform paths.
+
+## Compact electrical reviews
+
+After a schematic change and its ERC gate, create a deterministic review view:
+
+```bash
+python tools/pcb_design/export_electrical_manifest.py .
+```
+
+Compare artifacts from two revisions with:
+
+```bash
+python tools/pcb_design/diff_electrical_manifest.py before.json after.json
+```
+
+The output summarizes components, fields, footprints, nets, and pin-to-net
+connections. It is a review aid; the KiCad schematic and exported netlist are
+still authoritative.
+
+For the normal schematic review path, prefer one batch command. It runs the
+schematic gate, exports the manifest, optionally compares a baseline, and writes
+one report under `build/pcb-design-check/`:
+
+```bash
+python tools/pcb_design/review_schematic_batch.py . --baseline docs/validation/previous/electrical-manifest.json
+```
+
+Use ignored `scratch/` only for disposable probes. Commit validated sources
+before `snapshot_project.py`; snapshots reject a dirty source worktree unless
+`--allow-dirty` explicitly records a non-release exception.
+
+Every project declares its required KiCad major in
+`docs/kicad-toolchain.json`. The electrical gate rejects an undeclared or
+mismatched CLI, checks the schematic generator major, and fails if KiCad's
+non-forced upgrade command would migrate a disposable copy of a source file.
+Run `check_kicad.py . --stage format` immediately after the first symbol, before
+the schematic becomes expensive to regenerate.
 
 ## License
 

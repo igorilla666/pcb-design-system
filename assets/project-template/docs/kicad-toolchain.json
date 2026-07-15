@@ -1,0 +1,4 @@
+{
+  "required_major": 0,
+  "selection_evidence": "Set the exact KiCad major version before creating or generating hardware. Use the version that will open, validate, and release this project."
+}

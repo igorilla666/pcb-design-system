@@ -58,10 +58,17 @@ Before a meaningful change:
 
 1. Confirm requirements and the safe state of affected outputs.
 2. Identify the authoritative schematic, PCB, variant, and manufacturing package.
+   Read `docs/kicad-toolchain.json`; the declared KiCad major is a hard project
+   requirement, not a best-effort preference.
 3. Create a Git commit or named snapshot.
 4. Close KiCad before raw or automated edits to KiCad files.
 5. Read [`references/kicad-safety.md`](references/kicad-safety.md) when touching
    `.kicad_*` files.
+
+For a new schematic or generator, place or generate one representative symbol,
+then immediately run `python tools/pcb_design/check_kicad.py . --stage format`.
+It validates the declared toolchain and proves that KiCad would not migrate that
+file. Do not add further symbols, wiring, or generated circuitry until it passes.
 
 During the change:
 
@@ -70,6 +77,9 @@ During the change:
 - Keep baseline and production variants physically independent.
 - Record sources, MPNs, limits, assumptions, and vendor confirmations.
 - Do not treat zero ERC/DRC errors as functional proof.
+- Never generate, accept, or release a KiCad file with an undeclared or
+  mismatched toolchain version. The applicable KiCad CLI must parse it and its
+  non-forced upgrade command must leave a disposable copy unchanged.
 - Keep any KiCad generator or transformer used to create authoritative files in
   the repository; hidden scratch scripts are not reproducible evidence.
 
@@ -77,14 +87,21 @@ After the change:
 
 1. Run `python tools/pcb_design/check_kicad.py . --stage schematic` after
    connectivity changes; it runs ERC and audits the exported netlist.
+   Export `python tools/pcb_design/export_electrical_manifest.py .` when a
+   compact, deterministic electrical review or Git diff is useful. Compare
+   artifacts with `diff_electrical_manifest.py`; neither replaces KiCad ERC.
+   Prefer `review_schematic_batch.py` to perform the gate, manifest export, and
+   optional baseline diff in one call and produce a single compact report.
 2. Update PCB, refill zones, then run the same tool with `--stage pcb`.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
-4. Run `snapshot_project.py`; it includes the latest deterministic KiCad check
-   evidence from `build/pcb-design-check/`.
-5. Run `python tools/pcb_design/record_event.py .` with the applicable fields.
-6. Update `docs/PROJECT_STATE.md`, open risks, and next actions.
-7. Commit one coherent change.
+4. Run `python tools/pcb_design/record_event.py .` with the applicable fields,
+   then update `docs/PROJECT_STATE.md`, open risks, and next actions.
+5. Commit the validated source state. Then run `snapshot_project.py`; it rejects
+   a dirty worktree unless `--allow-dirty` explicitly marks a non-release
+   snapshot. It includes the latest deterministic check evidence from
+   `build/pcb-design-check/`.
+6. Commit the resulting snapshot evidence.
 
 Use [`references/workflow.md`](references/workflow.md) for design and release
 gates. Use [`references/records.md`](references/records.md) for log, state, ADR,

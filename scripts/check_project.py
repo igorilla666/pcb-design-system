@@ -17,6 +17,7 @@ REQUIRED = [
     "docs/power-budget.md",
     "docs/pin-map.md",
     "docs/component-register.csv",
+    "docs/kicad-toolchain.json",
     "docs/test-plan.md",
     "docs/LESSONS.md",
     "docs/RELEASE_CHECKLIST.md",
@@ -31,7 +32,10 @@ PORTABILITY_FILES = [
     "tools/pcb_design/SYSTEM_VERSION",
     "tools/pcb_design/check_project.py",
     "tools/pcb_design/check_kicad.py",
+    "tools/pcb_design/diff_electrical_manifest.py",
+    "tools/pcb_design/export_electrical_manifest.py",
     "tools/pcb_design/record_event.py",
+    "tools/pcb_design/review_schematic_batch.py",
     "tools/pcb_design/snapshot_project.py",
 ]
 PLACEHOLDERS = (

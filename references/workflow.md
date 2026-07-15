@@ -14,6 +14,8 @@
 
 - Create a new repository or physical revision directory.
 - Record the pcb-design-system version.
+- Declare the exact required KiCad major in `docs/kicad-toolchain.json` before
+  any generated or manual KiCad source is accepted.
 - Define the authoritative files and the intended production variant.
 - Write safe states, environment, lifetime, assembly strategy, and budget.
 
@@ -29,6 +31,9 @@
 
 ## 3. Schematic gate
 
+- After the first symbol, run `check_kicad.py . --stage format` before adding
+  wires or further symbols. It must confirm that the declared KiCad toolchain
+  accepts the native format without migration.
 - Verify critical parts with a symbol-pin / datasheet-function / footprint-pad
   table.
 - Check diode, TVS, zener, electrolytic, LED, MOSFET, relay, and connector
@@ -38,8 +43,12 @@
 - Use No Connect only for deliberately unused physical pins.
 - Make all wires visible and use unambiguous net names.
 - Require zero ERC errors and explain all warnings.
-- Run the deterministic schematic gate and inspect its exported netlist; a
+- Run `review_schematic_batch.py` to collect the deterministic schematic gate,
+  exported netlist manifest, and optional baseline diff in one report; a
   structure-only project check is not an electrical validation.
+- Require the non-forced KiCad migration probe to leave its disposable copy
+  unchanged; a migration prompt is a blocking format-validation failure.
+- Keep exploratory scripts and temporary KiCad files under ignored `scratch/`.
 - Review current paths and fault states manually.
 
 ## 4. PCB gate
@@ -74,5 +83,7 @@
 ## 7. Release gate
 
 - Update state, log, ADRs, pin map, limits, test results, and open risks.
+- Commit the validated source state before creating a snapshot. A dirty-source
+  snapshot is a non-release exception and must use `--allow-dirty`.
 - Tag the tested revision.
 - Never modify a released manufacturing package; create a new revision.

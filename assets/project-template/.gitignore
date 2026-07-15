@@ -7,4 +7,5 @@
 *.tmp
 __pycache__/
 build/
+scratch/
 manufacturing/*/working/

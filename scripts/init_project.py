@@ -18,7 +18,10 @@ TEMPLATE_ROOT = SKILL_ROOT / "assets" / "project-template"
 PROJECT_TOOL_NAMES = (
     "check_project.py",
     "check_kicad.py",
+    "diff_electrical_manifest.py",
+    "export_electrical_manifest.py",
     "record_event.py",
+    "review_schematic_batch.py",
     "snapshot_project.py",
 )
 
