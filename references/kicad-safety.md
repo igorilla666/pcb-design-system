@@ -3,16 +3,30 @@
 ## Before editing
 
 - Identify the authoritative `.kicad_sch`, `.kicad_pcb`, and variant.
+- Read `docs/kicad-toolchain.json` and confirm that the installed `kicad-cli`
+  major matches it before editing or generating files.
 - Check Git status and preserve unrelated changes.
 - Close KiCad before raw/automated file edits. An open window may overwrite the
   new file with stale in-memory content.
 - Create a commit or snapshot.
 
+## First-symbol format gate
+
+Immediately after the first symbol is placed or generated, and before adding
+other symbols or any wires, run:
+
+`python tools/pcb_design/check_kicad.py . --stage format`
+
+This performs only toolchain, header, and non-forced migration checks; it does
+not require a complete circuit or ERC-clean schematic. A failure means correct
+the project/generator format first, then restart from that small source state.
+
 ## Connectivity changes
 
 1. Change the schematic first.
 2. Validate symbol pin numbers against the exact datasheet and footprint.
-3. Export a netlist and run ERC.
+3. Export a netlist and run ERC. Export an electrical manifest when a compact,
+   reviewable record of components and pin-to-net connections is useful.
 4. Update the PCB from the schematic.
 5. Place and route the affected area.
 6. Remove obsolete tracks/vias and refill zones.
@@ -23,6 +37,20 @@ Run `check_kicad.py` after connectivity changes. Active warnings, failed netlist
 export, multi-pin components with no net connections, or a missing `.kicad_pro`
 block the gate. Exclude a justified warning in KiCad and document why; never
 classify warning families as harmless without inspecting each instance.
+
+`export_electrical_manifest.py` and `diff_electrical_manifest.py` summarize an
+exported netlist and its changes. They are intentionally read-only review aids:
+they neither edit KiCad files nor prove an electrical design correct.
+
+Do not infer file compatibility from a date-format token or from a generator
+claim. The declared toolchain and a successful parse by that exact `kicad-cli`
+are the compatibility proof. A file that fails to load is malformed or
+incompatible even if its header appears plausible.
+
+The KiCad gate also runs `sch upgrade` or `pcb upgrade` without `--force` on a
+copy under `build/`. If KiCad changes the copy, the source requires migration:
+open and save it in the declared toolchain, then rerun the gate. Never use an
+upgrade command directly on authoritative sources as a validation shortcut.
 
 Do not fix a pin-pad mismatch by rotating artwork or moving labels. Correct the
 symbol/footprint mapping.

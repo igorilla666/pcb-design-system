@@ -5,3 +5,4 @@ Thumbs.db
 *.tmp
 *.bak
 test-output/
+scratch/

@@ -40,6 +40,11 @@ def main() -> int:
     parser.add_argument("project", type=Path)
     parser.add_argument("--label", default="snapshot")
     parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="Allow a source snapshot from a dirty worktree (not for release evidence)",
+    )
+    parser.add_argument(
         "--evidence",
         action="append",
         default=[],
@@ -51,6 +56,13 @@ def main() -> int:
     root = args.project.expanduser().resolve()
     if not (root / "docs").is_dir():
         parser.error(f"not a tracked PCB project: {root}")
+
+    status = git_output(root, "status", "--short")
+    if status and not args.allow_dirty:
+        parser.error(
+            "worktree is dirty; commit or stash source changes before snapshot, "
+            "or use --allow-dirty for an explicitly non-release snapshot"
+        )
 
     stamp = dt.datetime.now().astimezone().strftime("%Y%m%d-%H%M")
     output = root / "docs" / "validation" / f"{stamp}-{safe_label(args.label)}"
@@ -67,7 +79,6 @@ def main() -> int:
     (output / "sha256sums.txt").write_text("\n".join(hashes) + ("\n" if hashes else ""), encoding="utf-8")
 
     head = git_output(root, "rev-parse", "HEAD")
-    status = git_output(root, "status", "--short")
     evidence_sources = list(args.evidence)
     default_evidence = root / "build" / "pcb-design-check"
     if not evidence_sources and default_evidence.exists():
