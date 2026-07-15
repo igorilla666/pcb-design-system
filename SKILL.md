@@ -15,7 +15,16 @@ agents and installation locations.
 
 ## Create or resume
 
-For a new project, run the interactive launcher:
+On Windows, prefer the graphical launcher:
+
+`launcher/PCBProjectLauncher.exe`
+
+It asks for the project, exact destination, Git identity, GitHub visibility, and
+whether to continue in ChatGPT/Codex or Gemini/Antigravity. The selected agent
+only controls which application opens; the repository and records remain
+agent-neutral.
+
+For a terminal or non-Windows environment, run the interactive launcher:
 
 `python "<SKILL_ROOT>/scripts/new_project.py"`
 

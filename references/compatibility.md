@@ -16,6 +16,11 @@ thin adapters only.
 All agents consume the same Agent Skills structure based on `SKILL.md`. Gemini can
 also discover `.agents/skills/pcb-design-system` in a workspace.
 
+On Windows, `launcher/PCBProjectLauncher.exe` provides one agent-neutral project
+creation flow. Choosing ChatGPT opens a new Codex task at the created repository;
+choosing Gemini opens that repository in Antigravity. The choice is not persisted
+as a hardware design constraint and the project can move between agents later.
+
 Run `python scripts/install_skill.py --platform all` once from the canonical checkout
 to install or link personal copies. Prefer link mode when the operating system
 allows it; auto mode falls back to a copy. Re-run the installer after an update
