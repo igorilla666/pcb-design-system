@@ -70,6 +70,11 @@ then immediately run `python tools/pcb_design/check_kicad.py . --stage format`.
 It validates the declared toolchain and proves that KiCad would not migrate that
 file. Do not add further symbols, wiring, or generated circuitry until it passes.
 
+When creating a PCB, create or generate only a minimal board first, then run
+`python tools/pcb_design/check_kicad.py . --stage pcb-format`. It validates the
+board syntax and migration state without requiring a completed layout. Do not
+place, route, or generate further PCB content until it passes.
+
 During the change:
 
 - Treat symbol pin, datasheet function, and footprint pad as one contract.

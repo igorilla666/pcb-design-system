@@ -14,6 +14,7 @@ from pathlib import Path
 
 
 SOURCE_SUFFIXES = {".kicad_sch", ".kicad_pcb", ".kicad_pro", ".kicad_sym", ".kicad_mod"}
+SKIP_PARTS = {".git", "manufacturing", "docs", "build"}
 
 
 def git_output(root: Path, *args: str) -> str:
@@ -33,6 +34,25 @@ def sha256(path: Path) -> str:
 
 def safe_label(value: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_-]+", "-", value).strip("-") or "snapshot"
+
+
+def default_evidence_files(root: Path, evidence_dir: Path) -> list[Path]:
+    """Return only deterministic gate artifacts, never ad-hoc debug outputs."""
+    names = {"electrical-manifest.json", "schematic-review.md", "pcb-review.md"}
+    projects = [
+        path for path in root.rglob("*.kicad_pro")
+        if not any(part in SKIP_PARTS for part in path.relative_to(root).parts)
+    ]
+    for project in projects:
+        label = project.stem
+        names.update({
+            f"{label}-erc.rpt",
+            f"{label}-netlist.xml",
+            f"{label}-drc.rpt",
+            f"{label}-sch-migration.txt",
+            f"{label}-pcb-migration.txt",
+        })
+    return [evidence_dir / name for name in sorted(names) if (evidence_dir / name).is_file()]
 
 
 def main() -> int:
@@ -82,7 +102,7 @@ def main() -> int:
     evidence_sources = list(args.evidence)
     default_evidence = root / "build" / "pcb-design-check"
     if not evidence_sources and default_evidence.exists():
-        evidence_sources.append(default_evidence)
+        evidence_sources.extend(default_evidence_files(root, default_evidence))
     copied_evidence = 0
     for source in evidence_sources:
         source = source if source.is_absolute() else root / source

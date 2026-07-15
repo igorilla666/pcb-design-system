@@ -90,6 +90,8 @@ mismatched CLI, checks the schematic generator major, and fails if KiCad's
 non-forced upgrade command would migrate a disposable copy of a source file.
 Run `check_kicad.py . --stage format` immediately after the first symbol, before
 the schematic becomes expensive to regenerate.
+Run `check_kicad.py . --stage pcb-format` immediately after creating the first
+minimal board, before adding layout work.
 
 ## License
 

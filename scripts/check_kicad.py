@@ -142,9 +142,9 @@ def main() -> int:
     parser.add_argument("project", type=Path)
     parser.add_argument(
         "--stage",
-        choices=["format", "schematic", "pcb", "all"],
+        choices=["format", "pcb-format", "schematic", "pcb", "all"],
         default="all",
-        help="format checks toolchain/native format only; run it after the first symbol",
+        help="format stages check native format only; run after the first symbol or board",
     )
     parser.add_argument("--output-dir", type=Path, default=Path("build/pcb-design-check"))
     parser.add_argument("--kicad-cli", type=Path)
@@ -210,21 +210,22 @@ def main() -> int:
                         else:
                             failures.extend(f"{label}: {item}" for item in audit_netlist(netlist))
 
-            if args.stage in {"pcb", "all"}:
+            if args.stage in {"pcb-format", "pcb", "all"}:
                 if not board.is_file():
                     failures.append(f"{label}: matching .kicad_pcb is missing")
                 else:
                     migration_failure = migration_probe(cli, "pcb", board, output)
                     if migration_failure:
                         failures.append(f"{label}: {migration_failure}")
-                    report = output / f"{label}-drc.rpt"
-                    result = run([
-                        str(cli), "pcb", "drc", "--output", str(report),
-                        "--format", "report", "--severity-all", "--exit-code-violations",
-                        "--schematic-parity", str(board),
-                    ])
-                    if result.returncode != 0:
-                        failures.append(f"{label}: DRC has active errors or warnings; see {report}")
+                    if args.stage in {"pcb", "all"}:
+                        report = output / f"{label}-drc.rpt"
+                        result = run([
+                            str(cli), "pcb", "drc", "--output", str(report),
+                            "--format", "report", "--severity-all", "--exit-code-violations",
+                            "--schematic-parity", str(board),
+                        ])
+                        if result.returncode != 0:
+                            failures.append(f"{label}: DRC has active errors or warnings; see {report}")
     except (OSError, RuntimeError, ET.ParseError) as exc:
         failures.append(str(exc))
 

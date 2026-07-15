@@ -19,6 +19,8 @@ tools, so its records remain usable across supported AI coding agents.
    hardware; validation rejects an undeclared or mismatched toolchain.
 9. After the first symbol, run `check_kicad.py . --stage format` before growing
    the schematic.
+10. After the first minimal board, run `check_kicad.py . --stage pcb-format`
+    before placement or routing.
 
 ## Layout
 
