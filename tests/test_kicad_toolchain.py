@@ -12,7 +12,7 @@ from unittest.mock import patch
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from check_kicad import find_cli, migration_probe, required_major, schematic_generator_major  # noqa: E402
+from check_kicad import board_has_root_uuid, find_cli, migration_probe, required_major, schematic_generator_major  # noqa: E402
 from export_electrical_manifest import find_cli as manifest_cli  # noqa: E402
 
 
@@ -64,6 +64,10 @@ class KiCadToolchainTests(unittest.TestCase):
 
     def test_manifest_uses_the_shared_exact_cli_resolver(self) -> None:
         self.assertIs(manifest_cli, find_cli)
+
+    def test_detects_an_invalid_root_level_pcb_uuid(self) -> None:
+        fixture = Path(__file__).parent / "fixtures" / "pcb" / "root-uuid.kicad_pcb"
+        self.assertTrue(board_has_root_uuid(fixture))
 
 
 if __name__ == "__main__":

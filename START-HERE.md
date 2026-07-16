@@ -21,6 +21,7 @@ You do not need to read the whole framework. This page is the operational map.
 | Preparing placement | `pcb-layout.json`, then the relevant files named by `pcb-constraints/index.json`. |
 | Routing or reviewing copper | `ground.json`, `netclasses.json`, `routing.json`, `power-thermal.json`. |
 | Checking a framework update | `CHANGELOG.md`, newest entry only. |
+| Maintaining the framework | `references/testing.md`, then `test_framework.py --suite all`. |
 
 ## Rules that are never optional
 

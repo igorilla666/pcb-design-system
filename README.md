@@ -21,6 +21,17 @@ Use [CHANGELOG.md](CHANGELOG.md) to understand only the newest framework changes
 Italian copies: [INIZIA-QUI.md](INIZIA-QUI.md) and
 [CHANGELOG.it.md](CHANGELOG.it.md).
 
+## Framework tests
+
+Run the structured suites with:
+
+```bash
+python scripts/test_framework.py --suite all
+```
+
+See [`references/testing.md`](references/testing.md) for fast, template,
+regression-fixture and optional KiCad integration suites.
+
 ## Install
 
 Requires Python 3 and Git.

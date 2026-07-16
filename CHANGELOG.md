@@ -3,6 +3,12 @@
 This is a human summary. Read the newest entry; older entries are context, not
 mandatory homework.
 
+## 1.8.0 — Structured framework tests
+
+- One runner separates fast, template, regression-fixture and optional KiCad
+  integration suites and writes a short local report.
+- The first regression fixture catches the invalid root-level PCB `uuid` token.
+
 ## 1.7.0 — Modular pre-placement constraints
 
 - PCB constraints are eight small files, indexed by one short file.

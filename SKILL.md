@@ -175,6 +175,8 @@ Use [`references/generator-contract.md`](references/generator-contract.md) for
 the declarative schematic and PCB generator inputs.
 Use [`references/pcb-constraints.md`](references/pcb-constraints.md) for the
 modular, memory-efficient pre-placement constraint gate.
+Use [`references/testing.md`](references/testing.md) when maintaining the
+framework; run the applicable structured suite before committing a change.
 
 ## Decisions and evidence
 

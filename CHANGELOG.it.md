@@ -3,6 +3,13 @@
 Questo è un riepilogo umano. Leggi la voce più recente; le precedenti sono
 contesto, non compiti obbligatori da recuperare.
 
+## 1.8.0 — Test strutturati del framework
+
+- Un unico runner separa suite veloci, template, fixture di regressione e
+  integrazione KiCad opzionale, producendo un breve report locale.
+- La prima fixture di regressione intercetta il token `uuid` PCB non valido a
+  livello radice.
+
 ## 1.7.0 — Vincoli modulari prima del piazzamento
 
 - I vincoli PCB sono otto file piccoli, indicizzati da un file breve.

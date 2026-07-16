@@ -84,6 +84,32 @@ def schematic_generator_major(schematic: Path) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def board_has_root_uuid(board: Path) -> bool:
+    """Detect the invalid top-level PCB uuid token without confusing nested UUIDs."""
+    text = board.read_text(encoding="utf-8")
+    depth = 0
+    in_string = False
+    escaped = False
+    for index, char in enumerate(text):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "(":
+            if depth == 1 and re.match(r"\(uuid\b", text[index:]):
+                return True
+            depth += 1
+        elif char == ")":
+            depth = max(0, depth - 1)
+    return False
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -217,6 +243,8 @@ def main() -> int:
                 if not board.is_file():
                     failures.append(f"{label}: matching .kicad_pcb is missing")
                 else:
+                    if board_has_root_uuid(board):
+                        failures.append(f"{label}: PCB has an unsupported root-level uuid token")
                     migration_failure = migration_probe(cli, "pcb", board, output)
                     if migration_failure:
                         failures.append(f"{label}: {migration_failure}")
