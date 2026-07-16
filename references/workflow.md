@@ -38,6 +38,9 @@
   accepts the native format without migration.
 - After the first minimal board, run `check_kicad.py . --stage pcb-format`
   before adding any footprints or layout work. It must parse without migration.
+- After that format gate, use KiCad's Update PCB from Schematic operation. The
+  imported board is the mandatory source for all footprint placement; neither an
+  LLM nor a script may recreate footprint/reference/net mappings from libraries.
 - Before a readability-only schematic pass, create
   `docs/schematic-layout.json`. Declare sheet size, reading direction, grid,
   titled block rectangles, and component assignments; use it as the generator
@@ -72,6 +75,9 @@
 - Treat an automatically generated footprint placement as a draft. Check the
   declared board geometry, footprint coverage, courtyards and edge clearances
   before routing; DRC and visual review remain required before acceptance.
+- Ensure every placed footprint was imported from the approved schematic. A
+  missing schematic footprint assignment is a blocker, not a reason to guess or
+  substitute a footprint in the PCB generator.
 - Place connectors and mechanical constraints first.
 - Place protection at the entry point and bypass at the IC pins.
 - Route power and returns before sensitive signals.

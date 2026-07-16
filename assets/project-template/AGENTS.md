@@ -59,6 +59,12 @@ clearance data. Do not hide any of these project decisions in Python literals.
 Generated placement remains a draft until format, parity, DRC and visual review
 pass.
 
+Create a minimal board and pass its format gate first. Then use KiCad's Update
+PCB from Schematic operation. Only that imported board may be placed by an agent
+or generator. Never load or recreate PCB footprints independently: references,
+footprints and nets originate from the approved schematic, and a missing
+schematic footprint assignment blocks placement.
+
 Required gates:
 
 - `check_project.py --strict` checks records only; never call it electrical proof.
@@ -75,7 +81,8 @@ Required gates:
   adding further symbols, wires, or generated circuitry.
 - Immediately after the first minimal PCB is created, run
   `python tools/pcb_design/check_kicad.py . --stage pcb-format`. Do this before
-  adding footprints, placement, routing, or zones.
+  adding footprints, placement, routing, or zones. After it passes, update the
+  board from the approved schematic before placing any footprint.
 - After schematic connectivity changes run
   `python tools/pcb_design/check_kicad.py . --stage schematic`.
 - For a compact review artifact, export

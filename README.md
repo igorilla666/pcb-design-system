@@ -93,6 +93,10 @@ the schematic becomes expensive to regenerate.
 Run `check_kicad.py . --stage pcb-format` immediately after creating the first
 minimal board, before adding layout work.
 
+After that gate, use KiCad's Update PCB from Schematic operation. It imports the
+approved footprint/reference/net mapping; automation may place those footprints
+but must not recreate them from libraries.
+
 For readable schematics, make `docs/schematic-layout.json` the generator input:
 it records the sheet, grid, block bounds, titles, and component assignments.
 Record the human visual review in `docs/schematic-layout.md`. The batch review

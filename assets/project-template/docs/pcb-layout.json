@@ -5,6 +5,10 @@
     "mode": "manual",
     "source": null
   },
+  "board_source": {
+    "mode": "update-from-schematic",
+    "schematic": null
+  },
   "output": null,
   "board": {
     "outline_mm": null,

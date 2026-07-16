@@ -31,6 +31,11 @@ adding footprints, placement, routing, or zones, run:
 This validates the native board syntax with KiCad's non-forced migration probe
 without requiring an outline or a DRC-clean layout.
 
+After this gate, invoke KiCad's Update PCB from Schematic operation. This is the
+only permitted transfer of references, footprint assignments and nets to a
+board. Agents and generators may place the imported footprints, but must never
+reconstruct them directly from a library.
+
 ## Connectivity changes
 
 1. Change the schematic first.

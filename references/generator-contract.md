@@ -31,17 +31,26 @@ approved footprints. It must not route, silently skip a missing footprint,
 choose a fallback KiCad version/library, or declare placement ready when checks
 fail. Generated placement is a draft until the placement gate and human review.
 
+The PCB must first be created as a minimal native board and pass the format gate.
+Then invoke KiCad's **Update PCB from Schematic** operation. Only after that
+import may a placement generator move the imported footprints. A generator must
+never load footprints from a library and recreate reference/net associations on
+its own: the schematic is the authoritative footprint assignment and KiCad is
+the authoritative transfer mechanism.
+
 ## Required generator behaviour
 
 1. Accept explicit input/output paths; never hard-code a revision, product,
    `C:` path, or design coordinates in source code.
 2. Use only the exact declared KiCad major and fail if a declared asset cannot
    be resolved.
-3. Produce deterministic order and a report with input hashes, component count,
+3. Confirm that the declared board source is `update-from-schematic`; fail if
+   the schematic lacks a footprint assignment or if the import has not occurred.
+4. Produce deterministic order and a report with input hashes, component count,
    output path and toolchain version.
-4. Live in `tools/pcb_design/generators/`, be registered in the tooling manifest,
+5. Live in `tools/pcb_design/generators/`, be registered in the tooling manifest,
    and pass a small fixture test before affecting authoritative hardware.
-5. Keep design-specific JSON and custom assets in the project repository, never
+6. Keep design-specific JSON and custom assets in the project repository, never
    as opaque Python literals.
 
 The framework deliberately provides contracts and gates, not a universal raw

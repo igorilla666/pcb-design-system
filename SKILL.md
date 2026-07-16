@@ -79,12 +79,19 @@ file. Do not add further symbols, wiring, or generated circuitry until it passes
 When creating a PCB, create or generate only a minimal board first, then run
 `python tools/pcb_design/check_kicad.py . --stage pcb-format`. It validates the
 board syntax and migration state without requiring a completed layout. Do not
-place, route, or generate further PCB content until it passes.
+place, route, or generate further PCB content until it passes. Once it passes,
+use KiCad's Update PCB from Schematic operation before any automated or manual
+placement. The resulting board, not a script-created footprint list, is the
+only allowed starting point for placement.
 
 During the change:
 
 - Treat symbol pin, datasheet function, and footprint pad as one contract.
 - Modify the schematic first, then update the PCB from that schematic.
+- Never create, load, or match PCB footprints independently of the approved
+  schematic. An LLM or generator may position only the references and nets
+  imported by KiCad from that schematic; a missing footprint assignment blocks
+  the flow.
 - Keep baseline and production variants physically independent.
 - Record sources, MPNs, limits, assumptions, and vendor confirmations.
 - Do not treat zero ERC/DRC errors as functional proof.
@@ -123,8 +130,9 @@ For a generated schematic, keep electrical intent in
 `docs/schematic-layout.json`; do not bury components, pin maps, or coordinates
 in Python literals. For generated or assisted PCB placement, first write
 `docs/pcb-layout.json` with outline, cut-outs, footprint sources, placements and
-edge-clearance requirements. A generator may create only a draft until the
-normal format, parity, DRC and human placement-review gates pass.
+edge-clearance requirements. Its source must be the board updated from the
+approved schematic. A generator may create only a draft until the normal format,
+parity, DRC and human placement-review gates pass.
 
 After the change:
 
