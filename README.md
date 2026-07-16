@@ -99,6 +99,12 @@ Record the human visual review in `docs/schematic-layout.md`. The batch review
 requires both and verifies that every electrical component belongs to one block;
 ERC success by itself is not a documentation review.
 
+Generated designs use declarative inputs rather than a project-specific Python
+list: `docs/schematic-source.json` records electrical intent and approved symbol
+sources, while `docs/pcb-layout.json` records the outline, cut-outs, footprint
+sources and placement intent. See
+[`references/generator-contract.md`](references/generator-contract.md).
+
 Every project also carries `docs/DEPENDENCIES.md`: it limits normal work to the
 repository and declared KiCad toolchain. External code or assets require user
 approval, provenance, version, license, hash, promotion path, and a test before

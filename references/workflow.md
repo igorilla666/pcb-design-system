@@ -43,6 +43,11 @@
   titled block rectangles, and component assignments; use it as the generator
   input so the first output has intentional visual zones. Preserve a manifest
   baseline before rearranging the layout.
+- When a generator creates the schematic, declare electrical components,
+  pin-to-net maps and symbol sources in `docs/schematic-source.json`; do not
+  encode this project data in the generator. For a generated or assisted PCB,
+  declare outline, cut-outs, approved footprint sources and placement intent in
+  `docs/pcb-layout.json` before generating the board draft.
 - Verify critical parts with a symbol-pin / datasheet-function / footprint-pad
   table.
 - Check diode, TVS, zener, electrolytic, LED, MOSFET, relay, and connector
@@ -64,6 +69,9 @@
 
 ## 4. PCB gate
 
+- Treat an automatically generated footprint placement as a draft. Check the
+  declared board geometry, footprint coverage, courtyards and edge clearances
+  before routing; DRC and visual review remain required before acceptance.
 - Place connectors and mechanical constraints first.
 - Place protection at the entry point and bypass at the IC pins.
 - Route power and returns before sensitive signals.

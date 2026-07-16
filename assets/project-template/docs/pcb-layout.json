@@ -1,0 +1,16 @@
+{
+  "format": "pcb-design-system/pcb-layout/v1",
+  "status": "planned",
+  "generation": {
+    "mode": "manual",
+    "source": null
+  },
+  "output": null,
+  "board": {
+    "outline_mm": null,
+    "cutouts_mm": [],
+    "mounting_holes": [],
+    "minimum_edge_clearance_mm": null
+  },
+  "placements": []
+}

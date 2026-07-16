@@ -26,6 +26,9 @@ tools, so its records remain usable across supported AI coding agents.
     `review_schematic_batch.py`.
 12. Acknowledge `docs/DEPENDENCIES.md` before authoritative work. It prevents
     hidden dependencies on other folders or prior projects.
+13. For generated schematics, complete `docs/schematic-source.json` alongside
+    the layout manifest; for generated PCB placement, complete
+    `docs/pcb-layout.json` before creating the board draft.
 
 ## Layout
 

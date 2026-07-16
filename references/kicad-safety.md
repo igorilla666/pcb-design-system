@@ -63,6 +63,13 @@ that a reviewer can read the schematic: inspect it in the declared KiCad version
 and record the completed visual review in `schematic-layout.md` and the JSON
 manifest.
 
+For generated hardware, keep electrical source data in
+`docs/schematic-source.json` and PCB geometry/placement data in
+`docs/pcb-layout.json`. The generator code must remain generic; a hard-coded
+project component list, board outline or revision path is not an authoritative
+input. Missing symbols or footprints are failures, never a reason to silently
+select another installed KiCad library or major version.
+
 Do not infer file compatibility from a date-format token or from a generator
 claim. The declared toolchain and a successful parse by that exact `kicad-cli`
 are the compatibility proof. A file that fails to load is malformed or

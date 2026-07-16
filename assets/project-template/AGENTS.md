@@ -51,6 +51,14 @@ record. Keep experiments in ignored
 `scratch/`, but promote any generator that produces an authoritative schematic
 to `tools/pcb_design/generators/` with its declared inputs.
 
+For a generated schematic, record components, reviewed pin-to-net mappings and
+symbol sources in `docs/schematic-source.json`; keep only sheet/block geometry
+in `docs/schematic-layout.json`. For generated or assisted PCB placement, use
+`docs/pcb-layout.json` for outline, cut-outs, footprint source, placement and
+clearance data. Do not hide any of these project decisions in Python literals.
+Generated placement remains a draft until format, parity, DRC and visual review
+pass.
+
 Required gates:
 
 - `check_project.py --strict` checks records only; never call it electrical proof.

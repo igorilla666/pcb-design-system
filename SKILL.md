@@ -118,6 +118,14 @@ validated electrical-manifest baseline before rearranging content. Keep
 boundaries and a readable grid, then inspect the authoritative file in the
 declared KiCad version. ERC alone does not prove the schematic is readable.
 
+For a generated schematic, keep electrical intent in
+`docs/schematic-source.json` and visual geometry in
+`docs/schematic-layout.json`; do not bury components, pin maps, or coordinates
+in Python literals. For generated or assisted PCB placement, first write
+`docs/pcb-layout.json` with outline, cut-outs, footprint sources, placements and
+edge-clearance requirements. A generator may create only a draft until the
+normal format, parity, DRC and human placement-review gates pass.
+
 After the change:
 
 1. Run `python tools/pcb_design/check_kicad.py . --stage schematic` after
@@ -150,6 +158,8 @@ Use [`references/dependencies.md`](references/dependencies.md) for the portable
 dependency boundary and promotion procedure.
 Use [`references/tooling.md`](references/tooling.md) for the historical-script
 quarantine and exact-KiCad resolution rules.
+Use [`references/generator-contract.md`](references/generator-contract.md) for
+the declarative schematic and PCB generator inputs.
 
 ## Decisions and evidence
 
