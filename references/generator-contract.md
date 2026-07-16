@@ -31,6 +31,13 @@ approved footprints. It must not route, silently skip a missing footprint,
 choose a fallback KiCad version/library, or declare placement ready when checks
 fail. Generated placement is a draft until the placement gate and human review.
 
+Before placement, the same file must contain an accepted `ground_strategy`:
+reference layers, ground domains, continuous-plane rules, intentionally blocked
+areas (including safety isolation), and return-path review criteria. The
+generator must use this strategy to reject placements that fragment the intended
+ground plane. It may pour provisional zones for inspection after placement, but
+must not mistake that provisional copper for final routing evidence.
+
 The PCB must first be created as a minimal native board and pass the format gate.
 Then invoke KiCad's **Update PCB from Schematic** operation. Only after that
 import may a placement generator move the imported footprints. A generator must
@@ -46,11 +53,13 @@ the authoritative transfer mechanism.
    be resolved.
 3. Confirm that the declared board source is `update-from-schematic`; fail if
    the schematic lacks a footprint assignment or if the import has not occurred.
-4. Produce deterministic order and a report with input hashes, component count,
+4. Require an accepted ground strategy before placement and report any intended
+   plane split, slot, keep-out or return-path risk.
+5. Produce deterministic order and a report with input hashes, component count,
    output path and toolchain version.
-5. Live in `tools/pcb_design/generators/`, be registered in the tooling manifest,
+6. Live in `tools/pcb_design/generators/`, be registered in the tooling manifest,
    and pass a small fixture test before affecting authoritative hardware.
-6. Keep design-specific JSON and custom assets in the project repository, never
+7. Keep design-specific JSON and custom assets in the project repository, never
    as opaque Python literals.
 
 The framework deliberately provides contracts and gates, not a universal raw

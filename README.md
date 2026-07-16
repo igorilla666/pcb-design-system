@@ -97,6 +97,11 @@ After that gate, use KiCad's Update PCB from Schematic operation. It imports the
 approved footprint/reference/net mapping; automation may place those footprints
 but must not recreate them from libraries.
 
+Before placement, accept the `ground_strategy` in `docs/pcb-layout.json`:
+reference layers, domains, isolation areas and return-path continuity. Inspect
+provisional ground zones after placement, then refill and inspect them again
+after routing.
+
 For readable schematics, make `docs/schematic-layout.json` the generator input:
 it records the sheet, grid, block bounds, titles, and component assignments.
 Record the human visual review in `docs/schematic-layout.md`. The batch review

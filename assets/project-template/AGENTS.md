@@ -59,6 +59,12 @@ clearance data. Do not hide any of these project decisions in Python literals.
 Generated placement remains a draft until format, parity, DRC and visual review
 pass.
 
+Before placing a component, complete and accept `ground_strategy` in
+`docs/pcb-layout.json`: reference layers, ground domains, isolation/keep-out
+areas and return-path continuity rules. Plan the continuous copper first; pour
+and inspect provisional zones after placement, then refill final zones after
+routing.
+
 Create a minimal board and pass its format gate first. Then use KiCad's Update
 PCB from Schematic operation. Only that imported board may be placed by an agent
 or generator. Never load or recreate PCB footprints independently: references,

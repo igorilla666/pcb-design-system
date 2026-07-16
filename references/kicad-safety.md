@@ -36,6 +36,11 @@ only permitted transfer of references, footprint assignments and nets to a
 board. Agents and generators may place the imported footprints, but must never
 reconstruct them directly from a library.
 
+Before placement, accept `ground_strategy` in `docs/pcb-layout.json`: intended
+reference layer(s), ground domains, safety slots/keep-outs and return-path
+continuity criteria. Use provisional zones after placement to expose fragmented
+planes or isolated islands; refill and review again after routing.
+
 ## Connectivity changes
 
 1. Change the schematic first.

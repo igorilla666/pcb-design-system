@@ -130,7 +130,9 @@ For a generated schematic, keep electrical intent in
 `docs/schematic-layout.json`; do not bury components, pin maps, or coordinates
 in Python literals. For generated or assisted PCB placement, first write
 `docs/pcb-layout.json` with outline, cut-outs, footprint sources, placements and
-edge-clearance requirements. Its source must be the board updated from the
+edge-clearance requirements. Before placing components, also accept its
+`ground_strategy`: reference layers, domains, forbidden/isolated areas and
+return-path continuity rules. Its source must be the board updated from the
 approved schematic. A generator may create only a draft until the normal format,
 parity, DRC and human placement-review gates pass.
 
@@ -144,7 +146,8 @@ After the change:
    Prefer `review_schematic_batch.py` to perform the gate, manifest export, and
    optional baseline diff in one call and produce a single compact report.
    It also checks the accepted visual-layout plan.
-2. Update PCB, refill zones, then run the same tool with `--stage pcb`.
+2. Update PCB, verify provisional ground-plane continuity after placement, refill
+   zones, then run the same tool with `--stage pcb`.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
 4. Run `python tools/pcb_design/record_event.py .` with the applicable fields,

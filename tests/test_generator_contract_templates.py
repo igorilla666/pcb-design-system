@@ -19,3 +19,4 @@ class GeneratorContractTemplateTests(unittest.TestCase):
         self.assertEqual(pcb["status"], "planned")
         self.assertEqual(pcb["generation"]["mode"], "manual")
         self.assertEqual(pcb["board_source"]["mode"], "update-from-schematic")
+        self.assertEqual(pcb["ground_strategy"]["status"], "planned")

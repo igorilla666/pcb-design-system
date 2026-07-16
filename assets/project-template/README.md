@@ -29,6 +29,8 @@ tools, so its records remain usable across supported AI coding agents.
 13. For generated schematics, complete `docs/schematic-source.json` alongside
     the layout manifest; for generated PCB placement, complete
     `docs/pcb-layout.json` before creating the board draft.
+14. Before PCB placement, accept the `ground_strategy` in `docs/pcb-layout.json`;
+    use provisional ground zones to inspect continuity after placement.
 
 ## Layout
 
