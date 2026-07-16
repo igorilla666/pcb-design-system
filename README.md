@@ -18,6 +18,8 @@ of relying on chat history.
 
 Start with [START-HERE.md](START-HERE.md): it is the one-page operational map.
 Use [CHANGELOG.md](CHANGELOG.md) to understand only the newest framework changes.
+Italian copies: [INIZIA-QUI.md](INIZIA-QUI.md) and
+[CHANGELOG.it.md](CHANGELOG.it.md).
 
 ## Install
 

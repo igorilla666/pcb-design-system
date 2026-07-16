@@ -6,6 +6,7 @@ tools, so its records remain usable across supported AI coding agents.
 
 Read [`docs/PROCESS.md`](docs/PROCESS.md) for the short working map; it tells you
 which records matter in the current phase.
+La copia italiana è [`docs/PROCESS.it.md`](docs/PROCESS.it.md).
 
 ## Start here
 

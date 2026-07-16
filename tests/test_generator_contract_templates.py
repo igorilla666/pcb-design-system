@@ -24,3 +24,5 @@ class GeneratorContractTemplateTests(unittest.TestCase):
     def test_project_process_map_is_present(self) -> None:
         process = (DOCS / "PROCESS.md").read_text(encoding="utf-8")
         self.assertIn("pcb-constraints/index.json", process)
+        italian = (DOCS / "PROCESS.it.md").read_text(encoding="utf-8")
+        self.assertIn("pcb-constraints/index.json", italian)
