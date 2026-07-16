@@ -93,6 +93,17 @@ the schematic becomes expensive to regenerate.
 Run `check_kicad.py . --stage pcb-format` immediately after creating the first
 minimal board, before adding layout work.
 
+For readable schematics, make `docs/schematic-layout.json` the generator input:
+it records the sheet, grid, block bounds, titles, and component assignments.
+Record the human visual review in `docs/schematic-layout.md`. The batch review
+requires both and verifies that every electrical component belongs to one block;
+ERC success by itself is not a documentation review.
+
+Every project also carries `docs/DEPENDENCIES.md`: it limits normal work to the
+repository and declared KiCad toolchain. External code or assets require user
+approval, provenance, version, license, hash, promotion path, and a test before
+they can affect authoritative hardware.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE). The launcher source and bundled

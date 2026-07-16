@@ -103,6 +103,9 @@ def main() -> int:
     default_evidence = root / "build" / "pcb-design-check"
     if not evidence_sources and default_evidence.exists():
         evidence_sources.extend(default_evidence_files(root, default_evidence))
+    layout_plan = root / "docs" / "schematic-layout.md"
+    if not args.evidence and layout_plan.is_file():
+        evidence_sources.append(layout_plan)
     copied_evidence = 0
     for source in evidence_sources:
         source = source if source.is_absolute() else root / source

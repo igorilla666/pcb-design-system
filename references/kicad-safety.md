@@ -52,6 +52,17 @@ classify warning families as harmless without inspecting each instance.
 exported netlist and its changes. They are intentionally read-only review aids:
 they neither edit KiCad files nor prove an electrical design correct.
 
+## Readability-only layout passes
+
+Keep the electrical manifest as a baseline, then record the intended sheet,
+reading flow, grid, block rectangles, and component assignments in
+`docs/schematic-layout.json`. Generators must consume that manifest rather than
+hard-code scattered geometry. A visual layout change must preserve the intended
+netlist; run the batch review after it. Do not accept a zero-ERC result as proof
+that a reviewer can read the schematic: inspect it in the declared KiCad version
+and record the completed visual review in `schematic-layout.md` and the JSON
+manifest.
+
 Do not infer file compatibility from a date-format token or from a generator
 claim. The declared toolchain and a successful parse by that exact `kicad-cli`
 are the compatibility proof. A file that fails to load is malformed or

@@ -12,14 +12,37 @@ Before changing hardware:
 5. Close KiCad before editing `.kicad_*` files outside KiCad.
 6. Set `docs/kicad-toolchain.json` to the exact KiCad major version used for
    this project. Do not generate or edit hardware until it is declared.
+7. Read `docs/DEPENDENCIES.md`. Use only its allowed sources. Do not scan or
+   reuse material outside the repository/toolchain boundary without explicit
+   user approval and promotion into the repository.
+
+## Dependency boundary
+
+The project repository, declared KiCad toolchain, and dependency ledger are the
+only allowed sources. Do not search adjacent repositories, drives, home folders,
+cloud folders, or previous projects for examples, syntax, code, symbols, or
+templates. If an external resource is required, stop and record source, reason,
+version, license, hash, destination, and user approval in `DEPENDENCIES.md`.
+Promote and test the minimum required resource before using it in authoritative
+hardware. Never set component or footprint defaults from a discovered project.
 
 Apply schematic changes first. Verify symbol pin, datasheet function, and
 footprint pad as one contract. Store any generator used for authoritative KiCad
 files in this repository; do not rely on agent scratch files.
 
+Plan and review readability separately from electrical connectivity. Before a
+readability pass, complete `docs/schematic-layout.json` with the sheet, grid,
+block bounds, titles, and component assignments. It is the canonical input for
+any generator. Keep `docs/schematic-layout.md` as the concise human review
+record. Keep experiments in ignored
+`scratch/`, but promote any generator that produces an authoritative schematic
+to `tools/pcb_design/generators/` with its declared inputs.
+
 Required gates:
 
 - `check_project.py --strict` checks records only; never call it electrical proof.
+- `check_dependency_policy.py` must pass before authoritative generation or a
+  batch review; it records a reproducible dependency boundary.
 - `check_kicad.py` requires the installed KiCad CLI major and schematic
   `generator_version` to match `docs/kicad-toolchain.json`. A board must also
   be parseable by that CLI during its DRC gate. It tests disposable copies with
@@ -36,6 +59,9 @@ Required gates:
   `python tools/pcb_design/export_electrical_manifest.py .`. Compare two
   revisions with `diff_electrical_manifest.py`; the manifest never replaces
   the KiCad schematic or ERC review.
+- `review_schematic_batch.py` also requires an accepted layout plan and recorded
+  visual review, validates the JSON layout manifest, and checks that every
+  electrical component is assigned to one functional block.
 - Prefer the one-command batch review after a schematic change:
   `python tools/pcb_design/review_schematic_batch.py .`. Keep experiments and
   disposable probes only in ignored `scratch/`, never beside authoritative files.

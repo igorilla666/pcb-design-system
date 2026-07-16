@@ -21,6 +21,11 @@ tools, so its records remain usable across supported AI coding agents.
    the schematic.
 10. After the first minimal board, run `check_kicad.py . --stage pcb-format`
     before placement or routing.
+11. Before finalizing a schematic layout, complete and accept
+    `docs/schematic-layout.json` and `docs/schematic-layout.md`, then run
+    `review_schematic_batch.py`.
+12. Acknowledge `docs/DEPENDENCIES.md` before authoritative work. It prevents
+    hidden dependencies on other folders or prior projects.
 
 ## Layout
 

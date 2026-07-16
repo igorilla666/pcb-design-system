@@ -1,0 +1,23 @@
+{
+  "format": "pcb-design-system/schematic-layout/v1",
+  "status": "planned",
+  "generation": {
+    "mode": "manual",
+    "source": null
+  },
+  "sheet": {
+    "size": "A3",
+    "orientation": "landscape",
+    "grid_mm": 1.27,
+    "reading_flow": "left-to-right: input and power at left, processing in the center, loads and external interfaces at right"
+  },
+  "blocks": [
+    {
+      "id": "power",
+      "title": "Power and input",
+      "bounds_mm": [12.7, 12.7, 101.6, 76.2],
+      "components": []
+    }
+  ],
+  "visual_review": []
+}
