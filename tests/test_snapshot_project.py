@@ -20,6 +20,7 @@ class SnapshotProjectTests(unittest.TestCase):
             root = Path(temporary)
             (root / "docs").mkdir()
             (root / "docs" / "PROJECT_LOG.md").write_text("# Log\n", encoding="utf-8")
+            (root / "docs" / "schematic-layout.md").write_text("# Layout\n", encoding="utf-8")
             (root / "board.kicad_pro").write_text("{}\n", encoding="utf-8")
             (root / ".gitignore").write_text("build/\n", encoding="utf-8")
             git(root, "init")
@@ -48,6 +49,7 @@ class SnapshotProjectTests(unittest.TestCase):
             root = Path(temporary)
             (root / "docs").mkdir()
             (root / "docs" / "PROJECT_LOG.md").write_text("# Log\n", encoding="utf-8")
+            (root / "docs" / "schematic-layout.md").write_text("# Layout\n", encoding="utf-8")
             (root / "board.kicad_pro").write_text("{}\n", encoding="utf-8")
             (root / ".gitignore").write_text("build/\n", encoding="utf-8")
             git(root, "init")
@@ -69,6 +71,7 @@ class SnapshotProjectTests(unittest.TestCase):
             evidence = snapshot / "evidence"
             self.assertTrue((evidence / "board-erc.rpt").is_file())
             self.assertFalse((evidence / "debug_probe-erc.rpt").exists())
+            self.assertTrue((evidence / "schematic-layout.md").is_file())
 
 
 if __name__ == "__main__":

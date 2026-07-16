@@ -36,8 +36,14 @@ def main() -> int:
     output = args.output_dir if args.output_dir.is_absolute() else root / args.output_dir
     output.mkdir(parents=True, exist_ok=True)
     manifest = output / "electrical-manifest.json"
+    dependencies = run([sys.executable, str(SCRIPT_DIR / "check_dependency_policy.py"), "."], root)
+    layout = run([sys.executable, str(SCRIPT_DIR / "check_schematic_layout_plan.py"), "."], root)
     gate = run([sys.executable, str(SCRIPT_DIR / "check_kicad.py"), ".", "--stage", "schematic", "--output-dir", str(output)], root)
     exported = run([sys.executable, str(SCRIPT_DIR / "export_electrical_manifest.py"), ".", "--output", str(manifest)], root)
+    layout_manifest = run([
+        sys.executable, str(SCRIPT_DIR / "check_schematic_layout_manifest.py"), ".",
+        "--require-accepted", "--electrical-manifest", str(manifest),
+    ], root)
 
     diff = None
     if args.baseline:
@@ -47,13 +53,31 @@ def main() -> int:
             command.append("--fail-on-change")
         diff = run(command, root)
 
-    passed = gate.returncode == 0 and exported.returncode == 0 and (diff is None or diff.returncode == 0)
+    passed = dependencies.returncode == 0 and layout.returncode == 0 and layout_manifest.returncode == 0 and gate.returncode == 0 and exported.returncode == 0 and (diff is None or diff.returncode == 0)
     sections = [
         "# Schematic review batch",
         "",
         f"- Timestamp: {dt.datetime.now().astimezone().isoformat(timespec='minutes')}",
         f"- Result: {'PASS' if passed else 'FAIL'}",
         f"- Manifest: `{relative(root, manifest)}`",
+        "",
+        "## Dependency contract",
+        "",
+        "```text",
+        (dependencies.stdout + dependencies.stderr).strip() or "no output",
+        "```",
+        "",
+        "## Layout plan and visual review",
+        "",
+        "```text",
+        (layout.stdout + layout.stderr).strip() or "no output",
+        "```",
+        "",
+        "## Declarative layout manifest",
+        "",
+        "```text",
+        (layout_manifest.stdout + layout_manifest.stderr).strip() or "no output",
+        "```",
         "",
         "## ERC and netlist gate",
         "",

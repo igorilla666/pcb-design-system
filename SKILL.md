@@ -64,6 +64,9 @@ Before a meaningful change:
 4. Close KiCad before raw or automated edits to KiCad files.
 5. Read [`references/kicad-safety.md`](references/kicad-safety.md) when touching
    `.kicad_*` files.
+6. Read `docs/DEPENDENCIES.md`. The repository, declared KiCad toolchain, and
+   its approved ledger are the only allowed sources. Do not scan other local
+   folders or repositories for examples, code, symbols, or syntax.
 
 For a new schematic or generator, place or generate one representative symbol,
 then immediately run `python tools/pcb_design/check_kicad.py . --stage format`.
@@ -87,6 +90,23 @@ During the change:
   non-forced upgrade command must leave a disposable copy unchanged.
 - Keep any KiCad generator or transformer used to create authoritative files in
   the repository; hidden scratch scripts are not reproducible evidence.
+- Keep exploratory generators only in ignored `scratch/`. Before accepting their
+  output, promote the final generator and its declared inputs to
+  `tools/pcb_design/generators/`.
+- When an external asset or code is genuinely needed, stop before using it. Get
+  user approval, record provenance/version/license/hash in `DEPENDENCIES.md`,
+  promote the minimum material into a versioned repository path, test it, then
+  use it. Never make authoritative output depend on discovered machine-local
+  files.
+
+For a readability-only schematic pass, first write
+`docs/schematic-layout.json`: sheet size, grid, reading flow, functional-block
+rectangles/titles, and component assignment. This is the canonical generator
+input, so the first output can already have planned visual zones. Preserve a
+validated electrical-manifest baseline before rearranging content. Keep
+`docs/schematic-layout.md` as the concise human review record. Use titled block
+boundaries and a readable grid, then inspect the authoritative file in the
+declared KiCad version. ERC alone does not prove the schematic is readable.
 
 After the change:
 
@@ -97,6 +117,7 @@ After the change:
    artifacts with `diff_electrical_manifest.py`; neither replaces KiCad ERC.
    Prefer `review_schematic_batch.py` to perform the gate, manifest export, and
    optional baseline diff in one call and produce a single compact report.
+   It also checks the accepted visual-layout plan.
 2. Update PCB, refill zones, then run the same tool with `--stage pcb`.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
@@ -115,6 +136,8 @@ and evidence formats. Use
 when reviewing power, grounding, relays, WS2812, RS-485, symbols, or manufacturing
 variants. Use [`references/compatibility.md`](references/compatibility.md) when
 installing or maintaining the skill across different AI agents.
+Use [`references/dependencies.md`](references/dependencies.md) for the portable
+dependency boundary and promotion procedure.
 
 ## Decisions and evidence
 

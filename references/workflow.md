@@ -16,6 +16,8 @@
 - Record the pcb-design-system version.
 - Declare the exact required KiCad major in `docs/kicad-toolchain.json` before
   any generated or manual KiCad source is accepted.
+- Acknowledge `docs/DEPENDENCIES.md` before authoritative work. Do not discover
+  inputs outside the project/toolchain boundary without approval and promotion.
 - Define the authoritative files and the intended production variant.
 - Write safe states, environment, lifetime, assembly strategy, and budget.
 
@@ -36,6 +38,11 @@
   accepts the native format without migration.
 - After the first minimal board, run `check_kicad.py . --stage pcb-format`
   before adding any footprints or layout work. It must parse without migration.
+- Before a readability-only schematic pass, create
+  `docs/schematic-layout.json`. Declare sheet size, reading direction, grid,
+  titled block rectangles, and component assignments; use it as the generator
+  input so the first output has intentional visual zones. Preserve a manifest
+  baseline before rearranging the layout.
 - Verify critical parts with a symbol-pin / datasheet-function / footprint-pad
   table.
 - Check diode, TVS, zener, electrolytic, LED, MOSFET, relay, and connector
@@ -52,6 +59,8 @@
   unchanged; a migration prompt is a blocking format-validation failure.
 - Keep exploratory scripts and temporary KiCad files under ignored `scratch/`.
 - Review current paths and fault states manually.
+- Open the authoritative schematic in the declared KiCad version and record a
+  visual review of every block, labels, fields, and inter-block connections.
 
 ## 4. PCB gate
 

@@ -16,6 +16,8 @@
 - [ ] Logic levels checked at worst case.
 - [ ] ERC has zero active errors or warnings; exclusions are documented.
 - [ ] Netlist and current paths manually reviewed.
+- [ ] `docs/schematic-layout.md` is accepted and its visual review is recorded.
+- [ ] `docs/schematic-layout.json` passes and assigns every electrical component once.
 
 ## PCB
 
