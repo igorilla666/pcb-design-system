@@ -21,6 +21,7 @@ PROJECT_TOOL_NAMES = (
     "check_project.py",
     "check_kicad.py",
     "check_dependency_policy.py",
+    "check_pcb_constraints.py",
     "check_tool_policy.py",
     "check_schematic_layout_plan.py",
     "check_schematic_layout_manifest.py",

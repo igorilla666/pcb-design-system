@@ -53,17 +53,18 @@ to `tools/pcb_design/generators/` with its declared inputs.
 
 For a generated schematic, record components, reviewed pin-to-net mappings and
 symbol sources in `docs/schematic-source.json`; keep only sheet/block geometry
-in `docs/schematic-layout.json`. For generated or assisted PCB placement, use
-`docs/pcb-layout.json` for outline, cut-outs, footprint source, placement and
-clearance data. Do not hide any of these project decisions in Python literals.
-Generated placement remains a draft until format, parity, DRC and visual review
-pass.
+in `docs/schematic-layout.json`. For generated or assisted PCB placement, keep
+`docs/pcb-layout.json` small and use `docs/pcb-constraints/index.json` to locate
+modular mechanical, manufacturing, netclass, ground, zone, routing,
+power/thermal and assembly/test constraints. Do not hide decisions in Python
+literals or load all modules unnecessarily.
 
-Before placing a component, complete and accept `ground_strategy` in
-`docs/pcb-layout.json`: reference layers, ground domains, isolation/keep-out
-areas and return-path continuity rules. Plan the continuous copper first; pour
-and inspect provisional zones after placement, then refill final zones after
-routing.
+Before placing a component, complete and accept every indexed constraint module,
+then run `python tools/pcb_design/check_pcb_constraints.py . --require-placement-ready`.
+Netclasses, stackup, ground continuity and required
+clearance corridors are placement inputs. Plan continuous copper first; pour and
+inspect provisional zones after placement, then refill final zones after routing.
+Generated placement remains a draft until format, parity, DRC and visual review.
 
 Create a minimal board and pass its format gate first. Then use KiCad's Update
 PCB from Schematic operation. Only that imported board may be placed by an agent
@@ -78,6 +79,9 @@ Required gates:
   batch review; it records a reproducible dependency boundary.
 - `check_tool_policy.py` must pass before authoritative generation or a batch
   review; it proves every available project script is reviewed and registered.
+- `check_pcb_constraints.py . --require-placement-ready` must pass before any
+  manual or generated component placement. It checks modular constraint records,
+  without forcing the agent to load one large planning file.
 - `check_kicad.py` requires the installed KiCad CLI major and schematic
   `generator_version` to match `docs/kicad-toolchain.json`. A board must also
   be parseable by that CLI during its DRC gate. It tests disposable copies with

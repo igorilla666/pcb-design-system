@@ -97,10 +97,11 @@ After that gate, use KiCad's Update PCB from Schematic operation. It imports the
 approved footprint/reference/net mapping; automation may place those footprints
 but must not recreate them from libraries.
 
-Before placement, accept the `ground_strategy` in `docs/pcb-layout.json`:
-reference layers, domains, isolation areas and return-path continuity. Inspect
-provisional ground zones after placement, then refill and inspect them again
-after routing.
+Before placement, accept the modular records listed by
+`docs/pcb-constraints/index.json`—including stackup, netclasses, mechanical
+space, ground, routing, thermal and assembly constraints—then run the
+placement-ready constraint gate. This keeps each LLM interaction focused on one
+small domain rather than a monolithic PCB plan.
 
 For readable schematics, make `docs/schematic-layout.json` the generator input:
 it records the sheet, grid, block bounds, titles, and component assignments.
@@ -111,7 +112,8 @@ ERC success by itself is not a documentation review.
 Generated designs use declarative inputs rather than a project-specific Python
 list: `docs/schematic-source.json` records electrical intent and approved symbol
 sources, while `docs/pcb-layout.json` records the outline, cut-outs, footprint
-sources and placement intent. See
+sources and placement intent. PCB constraints are split into small files under
+`docs/pcb-constraints/`. See
 [`references/generator-contract.md`](references/generator-contract.md).
 
 Every project also carries `docs/DEPENDENCIES.md`: it limits normal work to the

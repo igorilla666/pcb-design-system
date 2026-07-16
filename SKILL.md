@@ -128,13 +128,15 @@ declared KiCad version. ERC alone does not prove the schematic is readable.
 For a generated schematic, keep electrical intent in
 `docs/schematic-source.json` and visual geometry in
 `docs/schematic-layout.json`; do not bury components, pin maps, or coordinates
-in Python literals. For generated or assisted PCB placement, first write
-`docs/pcb-layout.json` with outline, cut-outs, footprint sources, placements and
-edge-clearance requirements. Before placing components, also accept its
-`ground_strategy`: reference layers, domains, forbidden/isolated areas and
-return-path continuity rules. Its source must be the board updated from the
-approved schematic. A generator may create only a draft until the normal format,
-parity, DRC and human placement-review gates pass.
+in Python literals. For generated or assisted PCB placement, keep
+`docs/pcb-layout.json` small and use its `docs/pcb-constraints/index.json` to
+load modular mechanical, manufacturing, netclass, ground, zone, routing,
+power/thermal and assembly/test constraints. Before placing components, accept
+all modules and run `check_pcb_constraints.py . --require-placement-ready`.
+Netclasses and ground continuity are pre-placement constraints, not late routing
+choices. Its source must be the board updated from the approved schematic.
+A generator may create only a draft until normal format, parity, DRC and human
+placement-review gates pass.
 
 After the change:
 
@@ -171,6 +173,8 @@ Use [`references/tooling.md`](references/tooling.md) for the historical-script
 quarantine and exact-KiCad resolution rules.
 Use [`references/generator-contract.md`](references/generator-contract.md) for
 the declarative schematic and PCB generator inputs.
+Use [`references/pcb-constraints.md`](references/pcb-constraints.md) for the
+modular, memory-efficient pre-placement constraint gate.
 
 ## Decisions and evidence
 

@@ -41,10 +41,12 @@
 - After that format gate, use KiCad's Update PCB from Schematic operation. The
   imported board is the mandatory source for all footprint placement; neither an
   LLM nor a script may recreate footprint/reference/net mappings from libraries.
-- Before placing any imported footprint, accept the `ground_strategy` in
-  `docs/pcb-layout.json`: reference layers, domains, safety isolation/keep-outs
-  and return-path continuity rules. Plan continuous planes now; do not wait for
-  final copper pouring to discover a placement blocks the return path.
+- Before placing any imported footprint, accept all modules listed by
+  `docs/pcb-constraints/index.json` and run the placement-ready constraint gate.
+  This covers mechanical, manufacturing/stackup, netclasses, ground, zones,
+  routing, power/thermal and assembly/test data without a single huge prompt.
+  Netclass widths/clearances and continuous-plane return paths must reserve real
+  placement corridors before final copper pouring.
 - Before a readability-only schematic pass, create
   `docs/schematic-layout.json`. Declare sheet size, reading direction, grid,
   titled block rectangles, and component assignments; use it as the generator

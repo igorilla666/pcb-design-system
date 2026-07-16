@@ -1,0 +1,13 @@
+{
+  "format": "pcb-design-system/pcb-constraints-index/v1",
+  "modules": [
+    {"id": "mechanical", "path": "docs/pcb-constraints/mechanical.json"},
+    {"id": "manufacturing", "path": "docs/pcb-constraints/manufacturing.json"},
+    {"id": "netclasses", "path": "docs/pcb-constraints/netclasses.json"},
+    {"id": "ground", "path": "docs/pcb-constraints/ground.json"},
+    {"id": "zones", "path": "docs/pcb-constraints/zones.json"},
+    {"id": "routing", "path": "docs/pcb-constraints/routing.json"},
+    {"id": "power-thermal", "path": "docs/pcb-constraints/power-thermal.json"},
+    {"id": "assembly-test", "path": "docs/pcb-constraints/assembly-test.json"}
+  ]
+}
