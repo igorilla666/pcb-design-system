@@ -18,20 +18,29 @@ SKIP_PARTS = {".git", "manufacturing", "docs", "build"}
 TOOLCHAIN_FILE = Path("docs/kicad-toolchain.json")
 
 
-def find_cli(explicit: Path | None) -> Path:
+def find_cli(explicit: Path | None, configured_major: int) -> Path:
+    """Find only the CLI for the declared major; never fall back to another one."""
     candidates = [explicit] if explicit else []
     found = shutil.which("kicad-cli")
     if found:
         candidates.append(Path(found))
     if sys.platform == "win32":
-        candidates.extend(
-            Path(f"C:/Program Files/KiCad/{version}.0/bin/kicad-cli.exe")
-            for version in range(12, 7, -1)
-        )
+        candidates.append(Path(f"C:/Program Files/KiCad/{configured_major}.0/bin/kicad-cli.exe"))
+
+    inspected: list[str] = []
     for candidate in candidates:
-        if candidate and candidate.is_file():
-            return candidate.resolve()
-    raise RuntimeError("kicad-cli not found; install KiCad or pass --kicad-cli")
+        if not candidate or not candidate.is_file():
+            continue
+        resolved = candidate.resolve()
+        actual_major = cli_major(resolved)
+        inspected.append(f"{resolved} (major {actual_major})")
+        if actual_major == configured_major:
+            return resolved
+    details = "; ".join(inspected) or "no usable kicad-cli found"
+    raise RuntimeError(
+        f"KiCad {configured_major} CLI is required by {TOOLCHAIN_FILE}; do not fall back to a "
+        f"different major. Inspected: {details}"
+    )
 
 
 def source_files(root: Path, suffix: str) -> list[Path]:
@@ -158,14 +167,8 @@ def main() -> int:
 
     failures: list[str] = []
     try:
-        cli = find_cli(args.kicad_cli)
         configured_major = required_major(root)
-        installed_major = cli_major(cli)
-        if installed_major != configured_major:
-            raise RuntimeError(
-                f"KiCad CLI major {installed_major} does not match required major {configured_major} "
-                f"from {TOOLCHAIN_FILE}"
-            )
+        cli = find_cli(args.kicad_cli, configured_major)
         projects = source_files(root, ".kicad_pro")
         if not projects:
             raise RuntimeError("no .kicad_pro project found")

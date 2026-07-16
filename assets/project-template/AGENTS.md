@@ -12,7 +12,7 @@ Before changing hardware:
 5. Close KiCad before editing `.kicad_*` files outside KiCad.
 6. Set `docs/kicad-toolchain.json` to the exact KiCad major version used for
    this project. Do not generate or edit hardware until it is declared.
-7. Read `docs/DEPENDENCIES.md`. Use only its allowed sources. Do not scan or
+7. Read `docs/DEPENDENCIES.md` and `docs/tooling-manifest.json`. Use only their allowed sources and approved tools. Do not scan or
    reuse material outside the repository/toolchain boundary without explicit
    user approval and promotion into the repository.
 
@@ -30,6 +30,19 @@ Apply schematic changes first. Verify symbol pin, datasheet function, and
 footprint pad as one contract. Store any generator used for authoritative KiCad
 files in this repository; do not rely on agent scratch files.
 
+## Tool boundary
+
+Run only scripts with `status: approved` in `docs/tooling-manifest.json` when
+they can affect authoritative hardware. Never run historical, diagnostic, or
+unregistered scripts as a shortcut. Retain potentially useful historical tools
+under `tools/pcb_design/legacy/` with `status: quarantined`; first review and
+test them in an isolated fixture, remove external discovery and version fallback,
+then promote the reviewed script and its tests out of `legacy/`.
+
+The KiCad major in `docs/kicad-toolchain.json` is exact. A KiCad 8 executable or
+library is not an acceptable fallback for a project declared for KiCad 10 (or
+any other major). Stop and tell the user that the declared major is unavailable.
+
 Plan and review readability separately from electrical connectivity. Before a
 readability pass, complete `docs/schematic-layout.json` with the sheet, grid,
 block bounds, titles, and component assignments. It is the canonical input for
@@ -43,6 +56,8 @@ Required gates:
 - `check_project.py --strict` checks records only; never call it electrical proof.
 - `check_dependency_policy.py` must pass before authoritative generation or a
   batch review; it records a reproducible dependency boundary.
+- `check_tool_policy.py` must pass before authoritative generation or a batch
+  review; it proves every available project script is reviewed and registered.
 - `check_kicad.py` requires the installed KiCad CLI major and schematic
   `generator_version` to match `docs/kicad-toolchain.json`. A board must also
   be parseable by that CLI during its DRC gate. It tests disposable copies with

@@ -67,6 +67,9 @@ Before a meaningful change:
 6. Read `docs/DEPENDENCIES.md`. The repository, declared KiCad toolchain, and
    its approved ledger are the only allowed sources. Do not scan other local
    folders or repositories for examples, code, symbols, or syntax.
+7. Read `docs/tooling-manifest.json`. Only its approved scripts may affect
+   authoritative hardware. Historical or diagnostic scripts are quarantined
+   until reviewed, tested, and promoted under `tools/pcb_design/`.
 
 For a new schematic or generator, place or generate one representative symbol,
 then immediately run `python tools/pcb_design/check_kicad.py . --stage format`.
@@ -88,6 +91,13 @@ During the change:
 - Never generate, accept, or release a KiCad file with an undeclared or
   mismatched toolchain version. The applicable KiCad CLI must parse it and its
   non-forced upgrade command must leave a disposable copy unchanged.
+- Resolve `kicad-cli` only for the exact major in `docs/kicad-toolchain.json`.
+  Never try KiCad 8 or another installed major as a fallback. If the declared
+  toolchain is unavailable, stop and ask the user to install/select it.
+- Before authoritative generation or a batch review, run
+  `python tools/pcb_design/check_tool_policy.py .`. Do not execute unregistered
+  historical or diagnostic scripts; preserve candidates in `legacy/`, review
+  them in isolation, add deterministic tests, then promote a reviewed copy.
 - Keep any KiCad generator or transformer used to create authoritative files in
   the repository; hidden scratch scripts are not reproducible evidence.
 - Keep exploratory generators only in ignored `scratch/`. Before accepting their
@@ -138,6 +148,8 @@ variants. Use [`references/compatibility.md`](references/compatibility.md) when
 installing or maintaining the skill across different AI agents.
 Use [`references/dependencies.md`](references/dependencies.md) for the portable
 dependency boundary and promotion procedure.
+Use [`references/tooling.md`](references/tooling.md) for the historical-script
+quarantine and exact-KiCad resolution rules.
 
 ## Decisions and evidence
 

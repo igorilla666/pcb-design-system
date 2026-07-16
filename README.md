@@ -104,6 +104,12 @@ repository and declared KiCad toolchain. External code or assets require user
 approval, provenance, version, license, hash, promotion path, and a test before
 they can affect authoritative hardware.
 
+Project tools are controlled too: `docs/tooling-manifest.json` lists the
+reviewed, hash-recorded scripts allowed to affect hardware. Historical
+diagnostics remain quarantined until tested and promoted. KiCad selection is
+exact: a project declared for KiCad 10 fails if only KiCad 8 is available; the
+framework never falls back to another major.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE). The launcher source and bundled

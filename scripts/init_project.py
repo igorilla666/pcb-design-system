@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
+import json
 import re
 import shutil
 import subprocess
@@ -19,6 +21,7 @@ PROJECT_TOOL_NAMES = (
     "check_project.py",
     "check_kicad.py",
     "check_dependency_policy.py",
+    "check_tool_policy.py",
     "check_schematic_layout_plan.py",
     "check_schematic_layout_manifest.py",
     "diff_electrical_manifest.py",
@@ -143,6 +146,19 @@ def describe_git_error(error: OSError | subprocess.CalledProcessError) -> str:
     return f"{error}{': ' + details if details else ''}"
 
 
+def write_tool_manifest(project_tools: Path, manifest: Path) -> None:
+    entries = []
+    for tool in sorted(project_tools.glob("*.py")):
+        entries.append({
+            "path": tool.relative_to(project_tools.parents[1]).as_posix(),
+            "purpose": "Bundled pcb-design-system project tool.",
+            "status": "approved",
+            "sha256": hashlib.sha256(tool.read_bytes()).hexdigest(),
+            "review_evidence": "Bundled by pcb-design-system " + (SKILL_ROOT / "VERSION").read_text(encoding="utf-8").strip(),
+        })
+    manifest.write_text(json.dumps({"tools": entries}, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="Human-readable project name")
@@ -195,6 +211,7 @@ def main() -> int:
     for name in PROJECT_TOOL_NAMES:
         shutil.copy2(SKILL_ROOT / "scripts" / name, project_tools / name)
     shutil.copy2(SKILL_ROOT / "VERSION", project_tools / "SYSTEM_VERSION")
+    write_tool_manifest(project_tools, target / "docs" / "tooling-manifest.json")
 
     if not args.no_git:
         try:
