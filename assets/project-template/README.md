@@ -4,6 +4,9 @@ PCB project initialized on {{DATE}} with pcb-design-system {{SYSTEM_VERSION}}.
 The repository includes model-neutral agent instructions and local workflow
 tools, so its records remain usable across supported AI coding agents.
 
+Read [`docs/PROCESS.md`](docs/PROCESS.md) for the short working map; it tells you
+which records matter in the current phase.
+
 ## Start here
 
 1. Read `docs/PROJECT_STATE.md`.

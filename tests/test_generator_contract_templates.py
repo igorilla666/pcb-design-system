@@ -20,3 +20,7 @@ class GeneratorContractTemplateTests(unittest.TestCase):
         self.assertEqual(pcb["generation"]["mode"], "manual")
         self.assertEqual(pcb["board_source"]["mode"], "update-from-schematic")
         self.assertEqual(pcb["constraints_index"], "docs/pcb-constraints/index.json")
+
+    def test_project_process_map_is_present(self) -> None:
+        process = (DOCS / "PROCESS.md").read_text(encoding="utf-8")
+        self.assertIn("pcb-constraints/index.json", process)

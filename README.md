@@ -14,6 +14,11 @@ of relying on chat history.
 - Exports compact electrical manifests from KiCad netlists for focused review
   and semantic diffs, without making generated artifacts authoritative.
 
+## Orientation
+
+Start with [START-HERE.md](START-HERE.md): it is the one-page operational map.
+Use [CHANGELOG.md](CHANGELOG.md) to understand only the newest framework changes.
+
 ## Install
 
 Requires Python 3 and Git.
@@ -98,8 +103,8 @@ approved footprint/reference/net mapping; automation may place those footprints
 but must not recreate them from libraries.
 
 Before placement, accept the modular records listed by
-`docs/pcb-constraints/index.json`—including stackup, netclasses, mechanical
-space, ground, routing, thermal and assembly constraints—then run the
+`docs/pcb-constraints/index.json`, including stackup, netclasses, mechanical
+space, ground, routing, thermal and assembly constraints, then run the
 placement-ready constraint gate. This keeps each LLM interaction focused on one
 small domain rather than a monolithic PCB plan.
 
@@ -111,8 +116,8 @@ ERC success by itself is not a documentation review.
 
 Generated designs use declarative inputs rather than a project-specific Python
 list: `docs/schematic-source.json` records electrical intent and approved symbol
-sources, while `docs/pcb-layout.json` records the outline, cut-outs, footprint
-sources and placement intent. PCB constraints are split into small files under
+sources, while `docs/pcb-layout.json` records the board source and placement
+intent. PCB constraints are split into small files under
 `docs/pcb-constraints/`. See
 [`references/generator-contract.md`](references/generator-contract.md).
 
