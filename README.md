@@ -14,6 +14,24 @@ of relying on chat history.
 - Exports compact electrical manifests from KiCad netlists for focused review
   and semantic diffs, without making generated artifacts authoritative.
 
+## Orientation
+
+Start with [START-HERE.md](START-HERE.md): it is the one-page operational map.
+Use [CHANGELOG.md](CHANGELOG.md) to understand only the newest framework changes.
+Italian copies: [INIZIA-QUI.md](INIZIA-QUI.md) and
+[CHANGELOG.it.md](CHANGELOG.it.md).
+
+## Framework tests
+
+Run the structured suites with:
+
+```bash
+python scripts/test_framework.py --suite all
+```
+
+See [`references/testing.md`](references/testing.md) for fast, template,
+regression-fixture and optional KiCad integration suites.
+
 ## Install
 
 Requires Python 3 and Git.
@@ -93,16 +111,39 @@ the schematic becomes expensive to regenerate.
 Run `check_kicad.py . --stage pcb-format` immediately after creating the first
 minimal board, before adding layout work.
 
+After that gate, use KiCad's Update PCB from Schematic operation. It imports the
+approved footprint/reference/net mapping; automation may place those footprints
+but must not recreate them from libraries.
+
+Before placement, accept the modular records listed by
+`docs/pcb-constraints/index.json`, including stackup, netclasses, mechanical
+space, ground, routing, thermal and assembly constraints, then run the
+placement-ready constraint gate. This keeps each LLM interaction focused on one
+small domain rather than a monolithic PCB plan.
+
 For readable schematics, make `docs/schematic-layout.json` the generator input:
 it records the sheet, grid, block bounds, titles, and component assignments.
 Record the human visual review in `docs/schematic-layout.md`. The batch review
 requires both and verifies that every electrical component belongs to one block;
 ERC success by itself is not a documentation review.
 
+Generated designs use declarative inputs rather than a project-specific Python
+list: `docs/schematic-source.json` records electrical intent and approved symbol
+sources, while `docs/pcb-layout.json` records the board source and placement
+intent. PCB constraints are split into small files under
+`docs/pcb-constraints/`. See
+[`references/generator-contract.md`](references/generator-contract.md).
+
 Every project also carries `docs/DEPENDENCIES.md`: it limits normal work to the
 repository and declared KiCad toolchain. External code or assets require user
 approval, provenance, version, license, hash, promotion path, and a test before
 they can affect authoritative hardware.
+
+Project tools are controlled too: `docs/tooling-manifest.json` lists the
+reviewed, hash-recorded scripts allowed to affect hardware. Historical
+diagnostics remain quarantined until tested and promoted. KiCad selection is
+exact: a project declared for KiCad 10 fails if only KiCad 8 is available; the
+framework never falls back to another major.
 
 ## License
 

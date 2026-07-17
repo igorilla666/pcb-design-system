@@ -12,7 +12,7 @@ Before changing hardware:
 5. Close KiCad before editing `.kicad_*` files outside KiCad.
 6. Set `docs/kicad-toolchain.json` to the exact KiCad major version used for
    this project. Do not generate or edit hardware until it is declared.
-7. Read `docs/DEPENDENCIES.md`. Use only its allowed sources. Do not scan or
+7. Read `docs/DEPENDENCIES.md` and `docs/tooling-manifest.json`. Use only their allowed sources and approved tools. Do not scan or
    reuse material outside the repository/toolchain boundary without explicit
    user approval and promotion into the repository.
 
@@ -30,6 +30,19 @@ Apply schematic changes first. Verify symbol pin, datasheet function, and
 footprint pad as one contract. Store any generator used for authoritative KiCad
 files in this repository; do not rely on agent scratch files.
 
+## Tool boundary
+
+Run only scripts with `status: approved` in `docs/tooling-manifest.json` when
+they can affect authoritative hardware. Never run historical, diagnostic, or
+unregistered scripts as a shortcut. Retain potentially useful historical tools
+under `tools/pcb_design/legacy/` with `status: quarantined`; first review and
+test them in an isolated fixture, remove external discovery and version fallback,
+then promote the reviewed script and its tests out of `legacy/`.
+
+The KiCad major in `docs/kicad-toolchain.json` is exact. A KiCad 8 executable or
+library is not an acceptable fallback for a project declared for KiCad 10 (or
+any other major). Stop and tell the user that the declared major is unavailable.
+
 Plan and review readability separately from electrical connectivity. Before a
 readability pass, complete `docs/schematic-layout.json` with the sheet, grid,
 block bounds, titles, and component assignments. It is the canonical input for
@@ -38,11 +51,37 @@ record. Keep experiments in ignored
 `scratch/`, but promote any generator that produces an authoritative schematic
 to `tools/pcb_design/generators/` with its declared inputs.
 
+For a generated schematic, record components, reviewed pin-to-net mappings and
+symbol sources in `docs/schematic-source.json`; keep only sheet/block geometry
+in `docs/schematic-layout.json`. For generated or assisted PCB placement, keep
+`docs/pcb-layout.json` small and use `docs/pcb-constraints/index.json` to locate
+modular mechanical, manufacturing, netclass, ground, zone, routing,
+power/thermal and assembly/test constraints. Do not hide decisions in Python
+literals or load all modules unnecessarily.
+
+Before placing a component, complete and accept every indexed constraint module,
+then run `python tools/pcb_design/check_pcb_constraints.py . --require-placement-ready`.
+Netclasses, stackup, ground continuity and required
+clearance corridors are placement inputs. Plan continuous copper first; pour and
+inspect provisional zones after placement, then refill final zones after routing.
+Generated placement remains a draft until format, parity, DRC and visual review.
+
+Create a minimal board and pass its format gate first. Then use KiCad's Update
+PCB from Schematic operation. Only that imported board may be placed by an agent
+or generator. Never load or recreate PCB footprints independently: references,
+footprints and nets originate from the approved schematic, and a missing
+schematic footprint assignment blocks placement.
+
 Required gates:
 
 - `check_project.py --strict` checks records only; never call it electrical proof.
 - `check_dependency_policy.py` must pass before authoritative generation or a
   batch review; it records a reproducible dependency boundary.
+- `check_tool_policy.py` must pass before authoritative generation or a batch
+  review; it proves every available project script is reviewed and registered.
+- `check_pcb_constraints.py . --require-placement-ready` must pass before any
+  manual or generated component placement. It checks modular constraint records,
+  without forcing the agent to load one large planning file.
 - `check_kicad.py` requires the installed KiCad CLI major and schematic
   `generator_version` to match `docs/kicad-toolchain.json`. A board must also
   be parseable by that CLI during its DRC gate. It tests disposable copies with
@@ -52,7 +91,8 @@ Required gates:
   adding further symbols, wires, or generated circuitry.
 - Immediately after the first minimal PCB is created, run
   `python tools/pcb_design/check_kicad.py . --stage pcb-format`. Do this before
-  adding footprints, placement, routing, or zones.
+  adding footprints, placement, routing, or zones. After it passes, update the
+  board from the approved schematic before placing any footprint.
 - After schematic connectivity changes run
   `python tools/pcb_design/check_kicad.py . --stage schematic`.
 - For a compact review artifact, export

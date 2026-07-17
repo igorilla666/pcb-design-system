@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -52,6 +53,17 @@ PLACEHOLDERS = (
 )
 
 
+def is_valid_git_repository(root: Path) -> bool:
+    """Return true only when ``root`` is the working tree of a Git repository."""
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--is-inside-work-tree"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and result.stdout.strip() == "true"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("project", type=Path)
@@ -78,7 +90,7 @@ def main() -> int:
             if placeholder in text:
                 errors.append(f"unresolved placeholder {placeholder}: {relative}")
 
-    if not (root / ".git").exists():
+    if not is_valid_git_repository(root):
         errors.append("missing Git repository (.git)")
 
     for relative in PORTABILITY_FILES:

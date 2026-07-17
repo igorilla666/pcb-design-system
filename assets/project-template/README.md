@@ -4,6 +4,10 @@ PCB project initialized on {{DATE}} with pcb-design-system {{SYSTEM_VERSION}}.
 The repository includes model-neutral agent instructions and local workflow
 tools, so its records remain usable across supported AI coding agents.
 
+Read [`docs/PROCESS.md`](docs/PROCESS.md) for the short working map; it tells you
+which records matter in the current phase.
+La copia italiana è [`docs/PROCESS.it.md`](docs/PROCESS.it.md).
+
 ## Start here
 
 1. Read `docs/PROJECT_STATE.md`.
@@ -26,6 +30,11 @@ tools, so its records remain usable across supported AI coding agents.
     `review_schematic_batch.py`.
 12. Acknowledge `docs/DEPENDENCIES.md` before authoritative work. It prevents
     hidden dependencies on other folders or prior projects.
+13. For generated schematics, complete `docs/schematic-source.json` alongside
+    the layout manifest; for generated PCB placement, complete
+    `docs/pcb-layout.json` before creating the board draft.
+14. Before PCB placement, accept all modules in `docs/pcb-constraints/` and run
+    `check_pcb_constraints.py . --require-placement-ready`.
 
 ## Layout
 

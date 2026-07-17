@@ -38,11 +38,25 @@
   accepts the native format without migration.
 - After the first minimal board, run `check_kicad.py . --stage pcb-format`
   before adding any footprints or layout work. It must parse without migration.
+- After that format gate, use KiCad's Update PCB from Schematic operation. The
+  imported board is the mandatory source for all footprint placement; neither an
+  LLM nor a script may recreate footprint/reference/net mappings from libraries.
+- Before placing any imported footprint, accept all modules listed by
+  `docs/pcb-constraints/index.json` and run the placement-ready constraint gate.
+  This covers mechanical, manufacturing/stackup, netclasses, ground, zones,
+  routing, power/thermal and assembly/test data without a single huge prompt.
+  Netclass widths/clearances and continuous-plane return paths must reserve real
+  placement corridors before final copper pouring.
 - Before a readability-only schematic pass, create
   `docs/schematic-layout.json`. Declare sheet size, reading direction, grid,
   titled block rectangles, and component assignments; use it as the generator
   input so the first output has intentional visual zones. Preserve a manifest
   baseline before rearranging the layout.
+- When a generator creates the schematic, declare electrical components,
+  pin-to-net maps and symbol sources in `docs/schematic-source.json`; do not
+  encode this project data in the generator. For a generated or assisted PCB,
+  declare outline, cut-outs, approved footprint sources and placement intent in
+  `docs/pcb-layout.json` before generating the board draft.
 - Verify critical parts with a symbol-pin / datasheet-function / footprint-pad
   table.
 - Check diode, TVS, zener, electrolytic, LED, MOSFET, relay, and connector
@@ -64,6 +78,15 @@
 
 ## 4. PCB gate
 
+- Treat an automatically generated footprint placement as a draft. Check the
+  declared board geometry, footprint coverage, courtyards and edge clearances
+  before routing; DRC and visual review remain required before acceptance.
+- Pour provisional ground zones after placement and inspect continuity, necks,
+  accidental islands and return paths. Route power/returns, then refill zones
+  and repeat the inspection after routing.
+- Ensure every placed footprint was imported from the approved schematic. A
+  missing schematic footprint assignment is a blocker, not a reason to guess or
+  substitute a footprint in the PCB generator.
 - Place connectors and mechanical constraints first.
 - Place protection at the entry point and bypass at the IC pins.
 - Route power and returns before sensitive signals.

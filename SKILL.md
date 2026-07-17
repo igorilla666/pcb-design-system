@@ -67,6 +67,9 @@ Before a meaningful change:
 6. Read `docs/DEPENDENCIES.md`. The repository, declared KiCad toolchain, and
    its approved ledger are the only allowed sources. Do not scan other local
    folders or repositories for examples, code, symbols, or syntax.
+7. Read `docs/tooling-manifest.json`. Only its approved scripts may affect
+   authoritative hardware. Historical or diagnostic scripts are quarantined
+   until reviewed, tested, and promoted under `tools/pcb_design/`.
 
 For a new schematic or generator, place or generate one representative symbol,
 then immediately run `python tools/pcb_design/check_kicad.py . --stage format`.
@@ -76,18 +79,32 @@ file. Do not add further symbols, wiring, or generated circuitry until it passes
 When creating a PCB, create or generate only a minimal board first, then run
 `python tools/pcb_design/check_kicad.py . --stage pcb-format`. It validates the
 board syntax and migration state without requiring a completed layout. Do not
-place, route, or generate further PCB content until it passes.
+place, route, or generate further PCB content until it passes. Once it passes,
+use KiCad's Update PCB from Schematic operation before any automated or manual
+placement. The resulting board, not a script-created footprint list, is the
+only allowed starting point for placement.
 
 During the change:
 
 - Treat symbol pin, datasheet function, and footprint pad as one contract.
 - Modify the schematic first, then update the PCB from that schematic.
+- Never create, load, or match PCB footprints independently of the approved
+  schematic. An LLM or generator may position only the references and nets
+  imported by KiCad from that schematic; a missing footprint assignment blocks
+  the flow.
 - Keep baseline and production variants physically independent.
 - Record sources, MPNs, limits, assumptions, and vendor confirmations.
 - Do not treat zero ERC/DRC errors as functional proof.
 - Never generate, accept, or release a KiCad file with an undeclared or
   mismatched toolchain version. The applicable KiCad CLI must parse it and its
   non-forced upgrade command must leave a disposable copy unchanged.
+- Resolve `kicad-cli` only for the exact major in `docs/kicad-toolchain.json`.
+  Never try KiCad 8 or another installed major as a fallback. If the declared
+  toolchain is unavailable, stop and ask the user to install/select it.
+- Before authoritative generation or a batch review, run
+  `python tools/pcb_design/check_tool_policy.py .`. Do not execute unregistered
+  historical or diagnostic scripts; preserve candidates in `legacy/`, review
+  them in isolation, add deterministic tests, then promote a reviewed copy.
 - Keep any KiCad generator or transformer used to create authoritative files in
   the repository; hidden scratch scripts are not reproducible evidence.
 - Keep exploratory generators only in ignored `scratch/`. Before accepting their
@@ -108,6 +125,19 @@ validated electrical-manifest baseline before rearranging content. Keep
 boundaries and a readable grid, then inspect the authoritative file in the
 declared KiCad version. ERC alone does not prove the schematic is readable.
 
+For a generated schematic, keep electrical intent in
+`docs/schematic-source.json` and visual geometry in
+`docs/schematic-layout.json`; do not bury components, pin maps, or coordinates
+in Python literals. For generated or assisted PCB placement, keep
+`docs/pcb-layout.json` small and use its `docs/pcb-constraints/index.json` to
+load modular mechanical, manufacturing, netclass, ground, zone, routing,
+power/thermal and assembly/test constraints. Before placing components, accept
+all modules and run `check_pcb_constraints.py . --require-placement-ready`.
+Netclasses and ground continuity are pre-placement constraints, not late routing
+choices. Its source must be the board updated from the approved schematic.
+A generator may create only a draft until normal format, parity, DRC and human
+placement-review gates pass.
+
 After the change:
 
 1. Run `python tools/pcb_design/check_kicad.py . --stage schematic` after
@@ -118,7 +148,8 @@ After the change:
    Prefer `review_schematic_batch.py` to perform the gate, manifest export, and
    optional baseline diff in one call and produce a single compact report.
    It also checks the accepted visual-layout plan.
-2. Update PCB, refill zones, then run the same tool with `--stage pcb`.
+2. Update PCB, verify provisional ground-plane continuity after placement, refill
+   zones, then run the same tool with `--stage pcb`.
 3. Review polarities, current paths, boot states, connector pinouts, and
    worst-case electrical limits manually.
 4. Run `python tools/pcb_design/record_event.py .` with the applicable fields,
@@ -138,6 +169,14 @@ variants. Use [`references/compatibility.md`](references/compatibility.md) when
 installing or maintaining the skill across different AI agents.
 Use [`references/dependencies.md`](references/dependencies.md) for the portable
 dependency boundary and promotion procedure.
+Use [`references/tooling.md`](references/tooling.md) for the historical-script
+quarantine and exact-KiCad resolution rules.
+Use [`references/generator-contract.md`](references/generator-contract.md) for
+the declarative schematic and PCB generator inputs.
+Use [`references/pcb-constraints.md`](references/pcb-constraints.md) for the
+modular, memory-efficient pre-placement constraint gate.
+Use [`references/testing.md`](references/testing.md) when maintaining the
+framework; run the applicable structured suite before committing a change.
 
 ## Decisions and evidence
 

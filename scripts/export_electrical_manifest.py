@@ -10,26 +10,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import subprocess
-import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from check_kicad import find_cli, required_major
+
 
 SKIP_PARTS = {".git", "manufacturing", "docs", "build"}
-
-
-def find_cli() -> Path:
-    found = shutil.which("kicad-cli")
-    if found:
-        return Path(found)
-    if sys.platform == "win32":
-        for version in range(12, 7, -1):
-            candidate = Path(f"C:/Program Files/KiCad/{version}.0/bin/kicad-cli.exe")
-            if candidate.is_file():
-                return candidate
-    raise RuntimeError("kicad-cli not found; pass --netlist or install KiCad")
 
 
 def text(element: ET.Element | None, default: str = "") -> str:
@@ -106,8 +94,9 @@ def export_netlist(project_root: Path, output: Path) -> tuple[Path, str]:
     if not schematic.is_file():
         raise RuntimeError(f"matching schematic is missing: {schematic}")
     netlist = output.with_name(f"{projects[0].stem}-netlist.xml")
+    cli = find_cli(None, required_major(project_root))
     result = subprocess.run(
-        [str(find_cli()), "sch", "export", "netlist", "--format", "kicadxml", "--output", str(netlist), str(schematic)],
+        [str(cli), "sch", "export", "netlist", "--format", "kicadxml", "--output", str(netlist), str(schematic)],
         check=False, capture_output=True, text=True,
     )
     if result.returncode != 0 or not netlist.is_file():

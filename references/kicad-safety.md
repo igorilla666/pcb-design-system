@@ -31,6 +31,18 @@ adding footprints, placement, routing, or zones, run:
 This validates the native board syntax with KiCad's non-forced migration probe
 without requiring an outline or a DRC-clean layout.
 
+After this gate, invoke KiCad's Update PCB from Schematic operation. This is the
+only permitted transfer of references, footprint assignments and nets to a
+board. Agents and generators may place the imported footprints, but must never
+reconstruct them directly from a library.
+
+Before placement, accept all modules listed by
+`docs/pcb-constraints/index.json`, then run the placement-ready constraint gate.
+It records netclasses, stackup, mechanical/safety space, ground continuity,
+routing, thermal and assembly constraints as small independent files. Use
+provisional zones after placement to expose fragmented planes or isolated
+islands; refill and review again after routing.
+
 ## Connectivity changes
 
 1. Change the schematic first.
@@ -62,6 +74,13 @@ netlist; run the batch review after it. Do not accept a zero-ERC result as proof
 that a reviewer can read the schematic: inspect it in the declared KiCad version
 and record the completed visual review in `schematic-layout.md` and the JSON
 manifest.
+
+For generated hardware, keep electrical source data in
+`docs/schematic-source.json` and PCB geometry/placement data in
+`docs/pcb-layout.json`. The generator code must remain generic; a hard-coded
+project component list, board outline or revision path is not an authoritative
+input. Missing symbols or footprints are failures, never a reason to silently
+select another installed KiCad library or major version.
 
 Do not infer file compatibility from a date-format token or from a generator
 claim. The declared toolchain and a successful parse by that exact `kicad-cli`

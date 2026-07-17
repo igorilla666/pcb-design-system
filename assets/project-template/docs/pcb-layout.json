@@ -1,0 +1,15 @@
+{
+  "format": "pcb-design-system/pcb-layout/v2",
+  "status": "planned",
+  "generation": {
+    "mode": "manual",
+    "source": null
+  },
+  "board_source": {
+    "mode": "update-from-schematic",
+    "schematic": null
+  },
+  "constraints_index": "docs/pcb-constraints/index.json",
+  "output": null,
+  "placements": []
+}

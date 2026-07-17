@@ -18,20 +18,29 @@ SKIP_PARTS = {".git", "manufacturing", "docs", "build"}
 TOOLCHAIN_FILE = Path("docs/kicad-toolchain.json")
 
 
-def find_cli(explicit: Path | None) -> Path:
+def find_cli(explicit: Path | None, configured_major: int) -> Path:
+    """Find only the CLI for the declared major; never fall back to another one."""
     candidates = [explicit] if explicit else []
     found = shutil.which("kicad-cli")
     if found:
         candidates.append(Path(found))
     if sys.platform == "win32":
-        candidates.extend(
-            Path(f"C:/Program Files/KiCad/{version}.0/bin/kicad-cli.exe")
-            for version in range(12, 7, -1)
-        )
+        candidates.append(Path(f"C:/Program Files/KiCad/{configured_major}.0/bin/kicad-cli.exe"))
+
+    inspected: list[str] = []
     for candidate in candidates:
-        if candidate and candidate.is_file():
-            return candidate.resolve()
-    raise RuntimeError("kicad-cli not found; install KiCad or pass --kicad-cli")
+        if not candidate or not candidate.is_file():
+            continue
+        resolved = candidate.resolve()
+        actual_major = cli_major(resolved)
+        inspected.append(f"{resolved} (major {actual_major})")
+        if actual_major == configured_major:
+            return resolved
+    details = "; ".join(inspected) or "no usable kicad-cli found"
+    raise RuntimeError(
+        f"KiCad {configured_major} CLI is required by {TOOLCHAIN_FILE}; do not fall back to a "
+        f"different major. Inspected: {details}"
+    )
 
 
 def source_files(root: Path, suffix: str) -> list[Path]:
@@ -73,6 +82,32 @@ def schematic_generator_major(schematic: Path) -> int | None:
         raise RuntimeError(f"cannot read {schematic}: {exc}") from exc
     match = re.search(r'\(generator_version\s+"(\d+)\.', header)
     return int(match.group(1)) if match else None
+
+
+def board_has_root_uuid(board: Path) -> bool:
+    """Detect the invalid top-level PCB uuid token without confusing nested UUIDs."""
+    text = board.read_text(encoding="utf-8")
+    depth = 0
+    in_string = False
+    escaped = False
+    for index, char in enumerate(text):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "(":
+            if depth == 1 and re.match(r"\(uuid\b", text[index:]):
+                return True
+            depth += 1
+        elif char == ")":
+            depth = max(0, depth - 1)
+    return False
 
 
 def sha256(path: Path) -> str:
@@ -158,14 +193,8 @@ def main() -> int:
 
     failures: list[str] = []
     try:
-        cli = find_cli(args.kicad_cli)
         configured_major = required_major(root)
-        installed_major = cli_major(cli)
-        if installed_major != configured_major:
-            raise RuntimeError(
-                f"KiCad CLI major {installed_major} does not match required major {configured_major} "
-                f"from {TOOLCHAIN_FILE}"
-            )
+        cli = find_cli(args.kicad_cli, configured_major)
         projects = source_files(root, ".kicad_pro")
         if not projects:
             raise RuntimeError("no .kicad_pro project found")
@@ -214,6 +243,8 @@ def main() -> int:
                 if not board.is_file():
                     failures.append(f"{label}: matching .kicad_pcb is missing")
                 else:
+                    if board_has_root_uuid(board):
+                        failures.append(f"{label}: PCB has an unsupported root-level uuid token")
                     migration_failure = migration_probe(cli, "pcb", board, output)
                     if migration_failure:
                         failures.append(f"{label}: {migration_failure}")

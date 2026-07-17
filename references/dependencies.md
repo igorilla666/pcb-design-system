@@ -15,3 +15,8 @@ library into a project.
 Use the project-local symbol/footprint library for custom or vendored assets.
 Standard component/footprint choices, including relay footprints, are project
 decisions supported by BOM evidence and ADRs; they are never framework defaults.
+
+Scripts are governed separately by `docs/tooling-manifest.json`. A historical
+script is not an allowed dependency merely because it is available locally: it
+must remain quarantined, be reviewed and tested, and then be promoted with a
+recorded hash before it can affect authoritative hardware.
