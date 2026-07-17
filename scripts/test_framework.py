@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ROOT / "tests"
 SUITES = {
-    "fast": ["test_dependency_policy.py", "test_electrical_manifest.py", "test_kicad_toolchain.py", "test_tool_policy.py"],
+    "fast": ["test_check_project.py", "test_dependency_policy.py", "test_electrical_manifest.py", "test_kicad_toolchain.py", "test_tool_policy.py"],
     "template": ["test_generator_contract_templates.py", "test_pcb_constraints.py", "test_schematic_layout_manifest.py", "test_schematic_layout_plan.py", "test_snapshot_project.py"],
     "fixtures": ["test_regression_fixtures.py"],
     "kicad": ["test_kicad_integration.py"],
